@@ -68,7 +68,7 @@ export function Filters({
 
   return (
     <>
-      <div className="flex gap-6 justify-end">
+      <div className="flex flex-col md:flex-row gap-6 justify-end">
         {menuOptions.map((item) => (
           <TActionsItemWrapper
             key={item.slug}

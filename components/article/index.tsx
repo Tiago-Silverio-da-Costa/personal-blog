@@ -55,10 +55,10 @@ function ArticleHead() {
       </div>
 
       <div className="flex flex-col">
-        <h1 className={`${albra.className} mt-8 italic pl-1 text-5xl font-medium text-secondary tracking-tighter leading-6`}>
+        <h1 className={`${albra.className} mt-8 italic pl-1 text-5xl font-medium text-secondary tracking-tighter leading-10 md:leading-6`}>
           Programação 1º ano:
         </h1>
-        <span className={`${satoshi.className} max-w-[40rem] mt-2 text-5xl not-italic font-medium text-secondary tracking-tighter leading-[3rem]`}>Retrospectiva do meu primeiro dia ao atual</span>
+        <span className={`${satoshi.className} max-w-[40rem] mt-2 text-5xl not-italic font-medium text-secondary tracking-tighter leading-10 md:leading-[3rem]`}>Retrospectiva do meu primeiro dia ao atual</span>
       </div>
 
       <div className="flex items-center gap-4 mt-8">

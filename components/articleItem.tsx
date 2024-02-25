@@ -6,6 +6,7 @@ import Link from "next/link";
 import Pagination from "./pagination";
 import localFont from "next/font/local";
 import { IoMdSearch } from "react-icons/io";
+import Search from "./search";
 
 const satoshi = localFont({
   src: [
@@ -34,7 +35,6 @@ const satoshi = localFont({
 
 interface IArticleProps {
   title: string;
-  image: string;
   description: string;
 }
 
@@ -49,28 +49,23 @@ export default function ArticleItem({
   const articleProps: IArticleProps[] = [
     {
       title: "Retrospectiva do meu primeiro dia ao atual",
-      image: "/thumb.jpg",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
     },
     {
       title: "Retrospectiva do meu primeiro dia ao atual",
-      image: "/thumb.jpg",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
     },
     {
       title: "Retrospectiva do meu primeiro dia ao atual",
-      image: "/thumb.jpg",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
     },
     {
       title: "Retrospectiva do meu primeiro dia ao atual",
-      image: "/thumb.jpg",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
     },
     {
       title: "Retrospectiva do meu primeiro dia ao atual",
-      image: "/thumb.jpg",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
     },
   ]
 
@@ -102,25 +97,16 @@ export default function ArticleItem({
 
 
   return (
-    <section className="flex flex-col gap-6 bg-primary/10 p-8 min-h-screen mx-auto w-5/6 max-w-5xl">
-      <div className="flex gap-6 justify-between items-center">
-        <div className="group">
-          <div className=" flex items-center border-b border-b-third group-hover:border-b-secondary pb-4">
-            <IoMdSearch className="group-hover:text-secondary text-secondaryText" />
-            <input
-              className="placeholder:group-hover:text-secondary bg-transparent pl-2 placeholder:text-secondaryText outline-none"
-              placeholder="Pesquisa"
-            />
-          </div>
-        </div>
+    <section className="flex flex-col gap-6 bg-primary/10 py-8 min-h-screen mx-auto w-5/6 max-w-5xl">
+      <div className="flex flex-col md:flex-row gap-6 justify-between items-end md:items-center">
+        <Search />
         <Filters menuOptions={filterMenuOptions} />
       </div>
 
       {
         articleProps.map((art, idx) => (
-          <Link href="/article" key={idx} className="flex gap-6 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
-            <Image src={art.image} alt="article thumb" width={200} height={200} />
-            <div className="flex flex-col gap-2 pr-6 py-4">
+          <Link href="/article" key={idx} className="flex gap-6 px-6 py-4 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
+            <div className="flex flex-col gap-2">
               <h1 className={`${satoshi.className} text-2xl font-bold text-secondary`}>{art.title}</h1>
               <p className="text-secondaryText">{art.description}</p>
               <div className="flex justify-between">
