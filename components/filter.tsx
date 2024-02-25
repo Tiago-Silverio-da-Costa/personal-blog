@@ -1,7 +1,10 @@
+"use client";
+
 import { TActionsDropdown, TActionsDropdownItem, TActionsItem, TActionsItemWrapper } from "@/styles/filter";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { HiOutlineChevronDown } from "react-icons/hi";
+import { getPaginationParams, getQueryParams } from "./admin/utils";
 
 export interface TFilterOptions {
   label: string;
@@ -12,7 +15,7 @@ export interface TFilterOptions {
   }
 }
 
-export function TableFilters({
+export function Filters({
   menuOptions,
 }: {
   menuOptions: TFilterOptions[]
@@ -20,8 +23,8 @@ export function TableFilters({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  // const paginationParams = getPaginationParams(searchParams)
-  // const queryParams = getQueryParams(paginationParams, searchParams)
+  const paginationParams = getPaginationParams(searchParams)
+  const queryParams = getQueryParams(paginationParams, searchParams)
 
   const [activeDropdownMenu, setActiveDropdownMenu] = useState<string>("");
 
@@ -65,47 +68,49 @@ export function TableFilters({
 
   return (
     <>
-      {menuOptions.map((item) => (
-        <TActionsItemWrapper
-          key={item.slug}
-          ref={(e) => {
-            if (e) dropdownMenuItemsRef.current[item.slug] = e;
-          }}
-        >
-          <TActionsItem
-            onClick={() => handleDropdownMenu(item.slug)}
-            $active={activeDropdownMenu == item.slug}
+      <div className="flex gap-6 justify-end">
+        {menuOptions.map((item) => (
+          <TActionsItemWrapper
+            key={item.slug}
+            ref={(e) => {
+              if (e) dropdownMenuItemsRef.current[item.slug] = e;
+            }}
           >
-            <p>
-              {`${item.label} ${item.slug == "perPage"
-                ? item.selected
-                : item.options[item.selected].toString().toLowerCase()
-                }`}
-            </p>
-            <HiOutlineChevronDown />
-          </TActionsItem>
-          {activeDropdownMenu == item.slug && (
-            <TActionsDropdown>
-              {Object.keys(item.options).map((option) => (
-                <TActionsDropdownItem
-                  key={option}
-                  href={{
-                    pathname: pathname,
-                    query: {
-                      // ...queryParams,
-                      // page: item.slug == "perPage" ? paginationParams.page,
-                      [item.slug]: option,
-                    }
-                  }}
-                >
-                  {item.options[option]}
-                  {item.slug == "perPage" ? "resultados" : ""}
-                </TActionsDropdownItem>
-              ))}
-            </TActionsDropdown>
-          )}
-        </TActionsItemWrapper>
-      ))}
+            <TActionsItem
+              onClick={() => handleDropdownMenu(item.slug)}
+              $active={activeDropdownMenu == item.slug}
+            >
+              <p className="w-fit">
+                {`${item.label} ${item.slug == "perPage"
+                  ? item.selected
+                  : item.options[item.selected].toString().toLowerCase()
+                  }`}
+              </p>
+              <HiOutlineChevronDown />
+            </TActionsItem>
+            {activeDropdownMenu == item.slug && (
+              <TActionsDropdown>
+                {Object.keys(item.options).map((option) => (
+                  <TActionsDropdownItem
+                    key={option}
+                    href={{
+                      pathname: pathname,
+                      query: {
+                        ...queryParams,
+                        page: item.slug == "perPage" ? 1 : paginationParams.page,
+                        [item.slug]: option,
+                      }
+                    }}
+                  >
+                    {item.options[option]}
+                    {item.slug == "perPage" ? " resultados" : ""}
+                  </TActionsDropdownItem>
+                ))}
+              </TActionsDropdown>
+            )}
+          </TActionsItemWrapper>
+        ))}
+      </div>
     </>
   )
 

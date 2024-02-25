@@ -24,7 +24,9 @@ export const TActionsItem = styled.button<{
 `;
 
 export const TActionsDropdown = styled.div`
-  background-color: var(--admin-popup-bg);
+  background-color: var(--primary);
+  color: var(--secondary);
+  border: 1px solid var(--border-color);
   box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
@@ -65,6 +67,6 @@ export const TActionsDropdownItem = styled(Link)`
   text-align: left;
 
   &:hover {
-    background-color: #15181a;
+    background-color: var(--border-hover);
   }
 `;
