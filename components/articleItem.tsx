@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Pagination from "./pagination";
 import localFont from "next/font/local";
+import { IoMdSearch } from "react-icons/io";
 
 const satoshi = localFont({
   src: [
@@ -102,7 +103,19 @@ export default function ArticleItem({
 
   return (
     <section className="flex flex-col gap-6 bg-primary/10 p-8 min-h-screen mx-auto w-5/6 max-w-5xl">
-      <Filters menuOptions={filterMenuOptions} />
+      <div className="flex gap-6 justify-between items-center">
+        <div className="group">
+          <div className=" flex items-center border-b border-b-third group-hover:border-b-secondary pb-4">
+            <IoMdSearch className="group-hover:text-secondary text-secondaryText" />
+            <input
+              className="placeholder:group-hover:text-secondary bg-transparent pl-2 placeholder:text-secondaryText outline-none"
+              placeholder="Pesquisa"
+            />
+          </div>
+        </div>
+        <Filters menuOptions={filterMenuOptions} />
+      </div>
+
       {
         articleProps.map((art, idx) => (
           <Link href="/article" key={idx} className="flex gap-6 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
