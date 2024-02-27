@@ -111,7 +111,7 @@ export default function Header() {
       <div className="flex justify-between items-center mx-auto w-5/6 max-w-5xl py-4">
         <Link href="/" className={`text-2xl font-bold ${satoshi.className}`}>Blog</Link>
         <div className="flex items-center gap-4">
-          {/* <a href={`https://api.whatsapp.com/send?phone=${process.env.NUMBER}&text=Oi,%20Tudo%20bem!`} className={`${satoshi.className}flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl`}><TbBrandWhatsapp /></a> */}
+          <a href={`https://api.whatsapp.com/send?phone=${process.env.NUMBER}&text=Oi,%20Tudo%20bem!`} className={`${satoshi.className}flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl`}><TbBrandWhatsapp /></a>
           <div
             onClick={() => SetOpenPopup(!openPopup)}
             className={`${satoshi.className}flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl`}
