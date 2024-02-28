@@ -1,5 +1,7 @@
 import Image from "next/image";
 import localFont from "next/font/local";
+import prisma from "@/adapter/db"
+import { Fragment } from "react";
 
 const albra = localFont({
   src: [
@@ -46,26 +48,44 @@ const satoshi = localFont({
   ],
 })
 
-function ArticleHead() {
+async function getData() {
+
+  const data = await prisma.post.findFirst({
+    select: {
+      title: true,
+      subtitle: true,
+      theme: true,
+      author: true,
+      profission: true,
+    }
+  })
+  return data
+}
+
+async function ArticleHead() {
+  const data = await getData()
+
+  if (!data) return
+
   return (
     <div className="flex flex-col border-b-2 border-b-secondary/50 pb-6">
       <div className="flex items-center gap-4">
-        <p className={`${satoshi.className} rounded-lg uppercase border border-secondary px-4 py-2 font-medium text-secondary text-xs tracking-tighter`}>Programação</p>
+        <p className={`${satoshi.className} rounded-lg uppercase border border-secondary px-4 py-2 font-medium text-secondary text-xs tracking-tighter`}>{data.theme}</p>
         <p className={`${satoshi.className} uppercase font-light text-xs text-secondary tracking-tighter`}>9 minutos de leitura</p>
       </div>
 
       <div className="flex flex-col">
         <h1 className={`${albra.className} mt-8 italic pl-1 text-5xl font-medium text-secondary tracking-tighter leading-10 md:leading-6`}>
-          Programação 1º ano:
+          {data.title}
         </h1>
-        <span className={`${satoshi.className} max-w-[40rem] mt-2 text-5xl not-italic font-medium text-secondary tracking-tighter leading-10 md:leading-[3rem]`}>Retrospectiva do meu primeiro dia ao atual</span>
+        <span className={`${satoshi.className} max-w-[40rem] mt-2 text-5xl not-italic font-medium text-secondary tracking-tighter leading-10 md:leading-[3rem]`}>{data.subtitle.charAt(0).toUpperCase() + data.subtitle.slice(1)}</span>
       </div>
 
       <div className="flex items-center gap-4 mt-8">
         <Image className="rounded-full border-2 border-secondary scale-90" src="/autor.png" alt="Autor" width={50} height={50} />
         <div className="flex flex-col gap-2">
-          <p className={`${satoshi.className} text-sm text-secondary font-normal tracking-tighter leading-4`}>Tiago S.C.</p>
-          <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">Dev - Programador</p>
+          <p className={`${satoshi.className} text-sm text-secondary font-normal tracking-tighter leading-4`}>{data.author.name}</p>
+          <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">{data.profission.name}</p>
         </div>
       </div>
     </div>

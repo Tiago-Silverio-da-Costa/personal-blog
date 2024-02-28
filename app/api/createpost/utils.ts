@@ -6,21 +6,23 @@ export const createBlogSchema = yup
   .string()
   .trim()
   .required("Campo obrigatório"),
-  subTitle: yup
+  subtitle: yup
   .string()
   .trim()
   .required("Campo obrigatório"),
-  themeInput: yup
+  theme: yup
   .string()
   .trim()
   .required("Campo obrigatório"),
   themeSelect: yup
   .string()
   .trim()
-  .required("Campo obrigatório"),
+  // .required("Campo obrigatório")
+  ,
   paragraph: yup
   .string()
   .trim()
-  .required("Campo obrigatório"),
+  // .required("Campo obrigatório")
+  ,
 })
 export type TCreateBlog = yup.InferType<typeof createBlogSchema>;

@@ -7,9 +7,11 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { TbBrandWhatsapp } from "react-icons/tb";
-import { TCreateBlog, createBlogSchema } from "@/app/api/blog/utils";
-import { FormFieldError, FormFieldGrp, FormFieldWrapper } from "@/styles/createBlogForms";
+import { TCreateBlog, createBlogSchema } from "@/app/api/createpost/utils";
+import { FormBtn, FormFieldError, FormFieldGrp, FormFieldWrapper, Spin } from "@/styles/createBlogForms";
 import { IoMdClose } from "react-icons/io";
+import Alert from "./commom/alert";
+import { PiSpinnerBold } from "react-icons/pi";
 
 const satoshi = localFont({
   src: [
@@ -40,6 +42,7 @@ interface iTheme {
   id: number;
   name: string;
 }
+
 
 
 export default function Header() {
@@ -90,21 +93,77 @@ export default function Header() {
   const {
     handleSubmit,
     clearErrors,
-    watch,
+    reset,
+    setError,
     register,
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = useForm<TCreateBlog>({
     resolver: yupResolver(createBlogSchema),
     reValidateMode: "onSubmit",
-    defaultValues: {
-      themeSelect: "selecione"
-    }
+    // defaultValues: {
+    //   themeSelect: "selecione"
+    // }
   })
 
   const onSubmit = async (data: TCreateBlog) => {
-    if (isSubmitting) return;
     clearErrors()
+
+    const responseData = await fetch("/api/createpost", {
+      credentials: "include",
+      cache: "no-cache",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ...data
+      })
+    })
+
+    if (responseData.status === 201) {
+      reset(
+        {
+          title: "",
+          subtitle: "",
+          theme: "",
+        },
+        {
+          keepIsSubmitted: true,
+        }
+      )
+      return;
+    } else if (responseData.status === 400 || responseData.status == 403) {
+      const response: {
+        fields?: (keyof TCreateBlog)[];
+      } & ApiReturnError = await responseData.json();
+
+      if (response.status == "error") {
+        if (response.message) {
+          setError("root", {
+            type: "custom",
+            message: response.message
+          });
+
+          if (response.fields)
+            response.fields.forEach((field) => {
+              setError(field, {
+                type: "custom",
+                message: "Verifique o campo!",
+              })
+            })
+          window.scrollTo({ top: 0, left: 0, behavior: "smooth" })
+          return;
+        }
+      }
+    }
+
+    setError("root", {
+      type: "custom",
+      message: "Ocorreu um erro inesperado! Verifique os dados e tente novamente."
+    })
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }
+
 
   return (
     <section className="border-b-third border-b">
@@ -114,7 +173,7 @@ export default function Header() {
           <a href={`https://api.whatsapp.com/send?phone=${process.env.NUMBER}&text=Oi,%20Tudo%20bem!`} className={`${satoshi.className}flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl`}><TbBrandWhatsapp /></a>
           <div
             onClick={() => SetOpenPopup(!openPopup)}
-            className={`${satoshi.className}flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl`}
+            className={`${satoshi.className} cursor-pointer flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl`}
           ><FaPlus /></div>
 
           {openPopup && (
@@ -130,7 +189,19 @@ export default function Header() {
                 autoComplete="on"
                 className="bg-primary grid justify-items-center mx-auto w-5/6 max-w-[40rem] px-8"
               >
-                <div className="flex items-start justify-between gap-8 mt-8">
+                {Object.keys(errors).length > 0 && (
+                  <Alert type="error">
+                    {errors.root?.message ??
+                      "Corrija os campos abaixo e tente novamente!"}
+                  </Alert>
+                )}
+                {isSubmitSuccessful && (
+                  <Alert type="success">
+                    Cadastro realizado com sucesso! Em breve divulgaremos a lista dos
+                    inscritos selecionados.
+                  </Alert>
+                )}
+                <div className="flex items-start justify-between gap-8 mt-6 w-full">
                   <FormFieldWrapper $error={!!errors.title}>
                     <FormFieldGrp>
                       <input
@@ -145,23 +216,23 @@ export default function Header() {
                       <FormFieldError>{errors.title.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
-                  <FormFieldWrapper $error={!!errors.subTitle}>
+                  <FormFieldWrapper $error={!!errors.subtitle}>
                     <FormFieldGrp>
                       <input
-                        {...register("subTitle")}
+                        {...register("subtitle")}
                         inputMode="text"
                         placeholder="Subtítulo"
                         maxLength={100}
                         readOnly={isSubmitting}
                       />
                     </FormFieldGrp>
-                    {errors.subTitle && (
-                      <FormFieldError>{errors.subTitle.message}</FormFieldError>
+                    {errors.subtitle && (
+                      <FormFieldError>{errors.subtitle.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
                 </div>
 
-                <div className="flex flex-col gap-2 mt-8">
+                {/* <div className="flex flex-col gap-2 mt-8 w-full">
                   <FormFieldWrapper $error={!!errors.paragraph}>
                     <FormFieldGrp>
                       <textarea
@@ -179,24 +250,24 @@ export default function Header() {
                     )}
                   </FormFieldWrapper>
                   <div className={`${satoshi.className} flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl w-full`}><FaPlus /></div>
-                </div>
+                </div> */}
 
-                <div className="flex items-start justify-between gap-8 mt-8">
-                  <FormFieldWrapper $error={!!errors.themeInput}>
+                <div className="flex items-start justify-between gap-8 mt-8 w-full">
+                  <FormFieldWrapper $error={!!errors.theme}>
                     <FormFieldGrp>
                       <input
-                        {...register("themeInput")}
+                        {...register("theme")}
                         inputMode="text"
                         placeholder="Tema"
                         maxLength={100}
                         readOnly={isSubmitting}
                       />
                     </FormFieldGrp>
-                    {errors.themeInput && (
-                      <FormFieldError>{errors.themeInput.message}</FormFieldError>
+                    {errors.theme && (
+                      <FormFieldError>{errors.theme.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
-                  <FormFieldWrapper $error={!!errors.themeSelect}>
+                  {/* <FormFieldWrapper $error={!!errors.themeSelect}>
                     <FormFieldGrp>
                       <select
                         disabled={isSubmitting}
@@ -216,11 +287,26 @@ export default function Header() {
                     {errors.themeSelect && (
                       <FormFieldError>{errors.themeSelect.message}</FormFieldError>
                     )}
-                  </FormFieldWrapper>
+                  </FormFieldWrapper> */}
                 </div>
-                <div className="flex items-center gap-4 mt-8 pb-4">
-                  <button type="submit" className={`${satoshi.className} flex items-center justify-center text-secondary bg-transparent border-secondaryText border px-6 py-2 font-bold text-sm w-full`}>Cancelar</button>
-                  <button type="submit" className={`${satoshi.className} flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-sm w-full`}>Criar</button>
+                <div className="flex items-start justify-end w-full gap-4 mt-8 pb-4">
+                  <button
+                    type="submit"
+                    className={`${satoshi.className} flex items-center justify-center text-secondary bg-transparent border-secondaryText border px-6 py-2 font-bold text-sm w-fit`}>Cancelar</button>
+                  <FormBtn
+                    type="submit"
+                    $isSubmitting={isSubmitting}
+                    disabled={isSubmitting}
+                    className={`${satoshi.className}`}>
+                    {isSubmitting && (
+                      <div className="text-xl">
+                        <Spin>
+                          <PiSpinnerBold className="text-primary" />
+                        </Spin>
+                      </div>
+                    )}
+                    <span>Criar</span>
+                  </FormBtn>
                 </div>
 
               </form>

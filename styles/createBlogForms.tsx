@@ -1,6 +1,64 @@
 "use client";
 import styled from "styled-components"
 
+export const Spin = styled.div`
+	animation-name: spin;
+	animation-duration: 2500ms;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+`;
+
+export const FormBtn = styled.button<{
+  $isSubmitting?: boolean;
+}>`
+	background-color: var(--secondary);
+	padding: 0.41rem 1.5rem;
+	cursor: pointer;
+	transition: all 0.2s;
+	width: 100%;
+	@media (min-width: 768px) {
+		width: fit-content;
+	}
+
+	position: relative;
+
+	& span {
+	  color: var(--primary);
+	  font-size: 0.875rem;
+		transition: all 0.1s;
+    font-weight: 700;
+    line-height: 1.25rem;
+	}
+
+	${({ $isSubmitting }) =>
+    $isSubmitting
+      ? `
+    cursor: default;
+    & span {
+      opacity: 0;
+    }`
+      : `
+  &:hover {
+    opacity: 0.75;
+  }`}
+
+	&>div {
+		left: 50%;
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
+`;
+
 export const FormFieldError = styled.div`
 	color: var(--err);
 	font-size: 0.75rem;
@@ -18,7 +76,7 @@ export const FormFieldGrp = styled.div`
 export const FormFieldWrapper = styled.div<{
   $error?: boolean
 }>`
-  width: 100%
+  width: 100%;
 
   &:first-child {
     margin-top: 0;
