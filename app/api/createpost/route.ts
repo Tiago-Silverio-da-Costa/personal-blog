@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TCreateBlog, createBlogSchema } from "./utils";
-import { ValidationError } from "yup";
+import { TCreateBlog } from "./utils";
 import { prisma } from "@/adapter/db";
 
 export async function POST(req: NextRequest) {
@@ -25,13 +24,7 @@ export async function POST(req: NextRequest) {
 
   const accessIp = req.headers.get("cf-connecting-ip");
 
-  let {
-    title,
-    subtitle,
-    theme,
-  }: // themeSelect,
-  // paragraph,
-  {} & TCreateBlog = await req.json();
+  let { title, subtitle, theme, content }: {} & TCreateBlog = await req.json();
 
   // validate post info
   if (!title || !subtitle || !theme) {
@@ -65,6 +58,7 @@ export async function POST(req: NextRequest) {
         title,
         subtitle,
         theme,
+        content,
       },
       select: {
         id: true,

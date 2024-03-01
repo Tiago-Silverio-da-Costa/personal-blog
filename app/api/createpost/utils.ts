@@ -19,10 +19,10 @@ export const createBlogSchema = yup
   .trim()
   // .required("Campo obrigatório")
   ,
-  paragraph: yup
+  content: yup
   .string()
   .trim()
-  // .required("Campo obrigatório")
+  .required("Campo obrigatório")
   ,
 })
 export type TCreateBlog = yup.InferType<typeof createBlogSchema>;
