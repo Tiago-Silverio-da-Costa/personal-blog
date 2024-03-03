@@ -1,12 +1,12 @@
 
 import { Filters, TFilterOptions } from "./filter";
 import { TPaginationParams } from "./admin/utils";
-import Image from "next/image";
 import Link from "next/link";
 import Pagination from "./pagination";
 import localFont from "next/font/local";
-import { IoMdSearch } from "react-icons/io";
 import Search from "./search";
+import prisma from "@/adapter/prisma"
+import momentTz from "moment-timezone";
 
 const satoshi = localFont({
   src: [
@@ -33,12 +33,20 @@ const satoshi = localFont({
   ],
 })
 
-interface IArticleProps {
-  title: string;
-  description: string;
+async function getData() {
+
+  const data = await prisma.post.findFirst({
+    select: {
+      title: true,
+      theme: true,
+      content: true,
+      createdAt: true
+    }
+  })
+  return data
 }
 
-export default function ArticleItem({
+export default async function ArticleItem({
   paginationParams,
   searchParams,
 }: {
@@ -46,28 +54,9 @@ export default function ArticleItem({
   searchParams?: { [key: string]: string | undefined };
 }) {
 
-  const articleProps: IArticleProps[] = [
-    {
-      title: "Retrospectiva do meu primeiro dia ao atual",
-      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
-    },
-    {
-      title: "Retrospectiva do meu primeiro dia ao atual",
-      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
-    },
-    {
-      title: "Retrospectiva do meu primeiro dia ao atual",
-      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
-    },
-    {
-      title: "Retrospectiva do meu primeiro dia ao atual",
-      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
-    },
-    {
-      title: "Retrospectiva do meu primeiro dia ao atual",
-      description: "Do meu primeiro dia até agora, cresci constantemente na programação, dominando novas habilidades e superando desafios. Estou ansioso para continuar evoluindo neste campo tecnológico dinâmico."
-    },
-  ]
+  const data = await getData()
+
+  if (!data) return
 
   const { sort, perPage } = paginationParams || {}
   const filterMenuOptions: TFilterOptions[] = [
@@ -95,28 +84,26 @@ export default function ArticleItem({
     },
   ]
 
-
   return (
     <section className="flex flex-col gap-6 bg-primary/10 py-8 min-h-screen mx-auto w-5/6 max-w-5xl">
       <div className="flex flex-col md:flex-row gap-6 justify-between items-end md:items-center">
         <Search />
         <Filters menuOptions={filterMenuOptions} />
       </div>
-
-      {
-        articleProps.map((art, idx) => (
-          <Link href="/article" key={idx} className="flex gap-6 px-6 py-4 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
-            <div className="flex flex-col gap-2">
-              <h1 className={`${satoshi.className} text-2xl font-bold text-secondary`}>{art.title}</h1>
-              <p className="text-secondaryText">{art.description}</p>
-              <div className="flex justify-between">
-                <p className="text-xs text-secondaryText">#tags</p>
-                <p className="text-xs text-secondaryText">14:40 24/02/2024</p>
-              </div>
-            </div>
-          </Link>
-        ))
-      }
+      <Link href="/article" className="flex gap-6 px-6 py-4 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
+        <div className="flex flex-col gap-2">
+          <h1 className={`${satoshi.className} text-2xl font-bold text-secondary`}>{data.title}</h1>
+          <p className="text-secondaryText line-clamp-2">{data.content}</p>
+          <div className="flex justify-between">
+            <p className="text-xs text-secondaryText">#{data.theme}</p>
+            <p className="text-xs text-secondaryText">
+              {momentTz(data.createdAt)
+                .tz("America/Sao_Paulo")
+                .format("DD/MM/YYYY HH:mm:ss")}
+            </p>
+          </div>
+        </div>
+      </Link>
       <Pagination
         pathname={"/admin/administracao/assinaturas"}
         searchParams={searchParams}

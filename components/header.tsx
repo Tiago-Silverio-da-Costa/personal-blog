@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import localFont from "next/font/local";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { TbBrandWhatsapp } from "react-icons/tb";
 import { TCreateBlog, createBlogSchema } from "@/app/api/createpost/utils";
@@ -38,57 +38,13 @@ const satoshi = localFont({
   ],
 })
 
-interface iTheme {
-  id: number;
-  name: string;
+interface Ttheme {
+  theme: string;
 }
 
-
-
-export default function Header() {
+export default function Header({ theme }: Ttheme) {
   // process.env.NUMBER pegar do banco
-
-  const themeList: iTheme[] = [
-    {
-      id: 1,
-      name: "Programação"
-    },
-    {
-      id: 2,
-      name: "Design"
-    },
-    {
-      id: 3,
-      name: "Marketing"
-    },
-    {
-      id: 4,
-      name: "Vida de freelancer"
-    }
-  ]
-
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
-  // const popupRef = useRef<HTMLDivElement>(null);
-
-  // useEffect(() => {
-  //   const handleClick = (event: Event) => {
-  //     if (
-  //       !openPopup &&
-  //       popupRef.current &&
-  //       event.target instanceof Node &&
-  //       !popupRef.current.contains(event.target as Node)
-  //     ){
-  //       SetOpenPopup(!openPopup)
-  //     }
-  //   }
-
-  //   document.addEventListener("click", handleClick)
-  //   document.addEventListener("touchend", handleClick)
-  //   return () => {
-  //     document.removeEventListener("click", handleClick)
-  //     document.removeEventListener("touchend", handleClick)
-  //   }
-  // }, [openPopup, popupRef])
 
   const {
     handleSubmit,
@@ -100,9 +56,9 @@ export default function Header() {
   } = useForm<TCreateBlog>({
     resolver: yupResolver(createBlogSchema),
     reValidateMode: "onSubmit",
-    // defaultValues: {
-    //   themeSelect: "selecione"
-    // }
+    defaultValues: {
+      themeSelect: "selecione"
+    }
   })
 
   const onSubmit = async (data: TCreateBlog) => {
@@ -178,7 +134,6 @@ export default function Header() {
 
           {openPopup && (
             <div className="flex flex-col items-center justify-center bg-black/50 fixed bottom-0 left-0 top-0 select-none w-screen z-50">
-
               <form
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="on"
@@ -250,7 +205,6 @@ export default function Header() {
                       <FormFieldError>{errors.content.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
-                  <div className={`${satoshi.className} flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl w-full`}><FaPlus /></div>
                 </div>
 
                 <div className="flex items-start justify-between gap-8 mt-8 w-full">
@@ -268,7 +222,7 @@ export default function Header() {
                       <FormFieldError>{errors.theme.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
-                  {/* <FormFieldWrapper $error={!!errors.themeSelect}>
+                  <FormFieldWrapper $error={!!errors.themeSelect}>
                     <FormFieldGrp>
                       <select
                         disabled={isSubmitting}
@@ -277,21 +231,19 @@ export default function Header() {
                         <option disabled value="selecione">
                           Selecione
                         </option>
-                        {themeList.map((theme) => (
-                          <option value={theme.name} key={theme.id}>
-                            {theme.name}
-                          </option>
-                        ))}
-
+                        <option value={theme}>
+                          {theme}
+                        </option>
                       </select>
                     </FormFieldGrp>
                     {errors.themeSelect && (
                       <FormFieldError>{errors.themeSelect.message}</FormFieldError>
                     )}
-                  </FormFieldWrapper> */}
+                  </FormFieldWrapper>
                 </div>
                 <div className="flex items-start justify-end w-full gap-4 mt-8 pb-4">
                   <button
+                    onClick={() => SetOpenPopup(!openPopup)}
                     type="submit"
                     className={`${satoshi.className} flex items-center justify-center text-secondary bg-transparent border-secondaryText border px-6 py-2 font-bold text-sm w-fit`}>Cancelar</button>
                   <FormBtn
