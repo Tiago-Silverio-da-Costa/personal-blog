@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { prisma } from "@/adapter/db";
 
 export const createBlogSchema = yup
 .object({
@@ -16,9 +17,7 @@ export const createBlogSchema = yup
   .required("Campo obrigatório"),
   themeSelect: yup
   .string()
-  .trim()
-  // .required("Campo obrigatório")
-  ,
+  .trim(),
   content: yup
   .string()
   .trim()
@@ -26,3 +25,16 @@ export const createBlogSchema = yup
   ,
 })
 export type TCreateBlog = yup.InferType<typeof createBlogSchema>;
+
+
+export async function getPostById(id: string) {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: "4a77ab5c-bf1c-415b-8fd3-dbbd47532752",
+    }, 
+    select: {
+      id: true,
+    }
+  });
+  return post;
+}

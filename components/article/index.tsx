@@ -63,9 +63,12 @@ const satoshi = localFont({
   ],
 })
 
-async function getData() {
+async function getData({id}: {id: string}) {
 
   const data = await prisma.post.findFirst({
+    where: {
+      id: id
+    },
     select: {
       title: true,
       subtitle: true,
@@ -78,8 +81,8 @@ async function getData() {
   return data
 }
 
-async function ArticleHead() {
-  const data = await getData()
+async function ArticleHead({id}: {id: string}) {
+  const data = await getData({id})
 
   if (!data) return
 
@@ -108,8 +111,8 @@ async function ArticleHead() {
   )
 }
 
-async function ArticleBody() {
-  const data = await getData()
+async function ArticleBody({id}: {id: string}) {
+  const data = await getData({id})
 
   if (!data) return
 
@@ -128,12 +131,13 @@ async function ArticleBody() {
   )
 }
 
-export default function Article() {
+export default function Article({id}: {id: string}) {
 
   return (
     <div className="mx-auto w-5/6 max-w-5xl py-6">
-      <ArticleHead />
-      <ArticleBody />
+      <ArticleHead id={id} />
+      <ArticleBody id={id} />
+      
     </div>
   )
 }

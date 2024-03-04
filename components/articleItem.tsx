@@ -35,8 +35,9 @@ const satoshi = localFont({
 
 async function getData() {
 
-  const data = await prisma.post.findFirst({
+  const data = await prisma.post.findMany({
     select: {
+      id: true,
       title: true,
       theme: true,
       content: true,
@@ -84,13 +85,16 @@ export default async function ArticleItem({
     },
   ]
 
+
+
   return (
     <section className="flex flex-col gap-6 bg-primary/10 py-8 min-h-screen mx-auto w-5/6 max-w-5xl">
       <div className="flex flex-col md:flex-row gap-6 justify-between items-end md:items-center">
         <Search />
         <Filters menuOptions={filterMenuOptions} />
       </div>
-      <Link href="/article" className="flex gap-6 px-6 py-4 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
+      {data.map((data, idx) => 
+      <Link key={idx} href={`/article?${data.id}`} className="flex gap-6 px-6 py-4 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
         <div className="flex flex-col gap-2">
           <h1 className={`${satoshi.className} text-2xl font-bold text-secondary`}>{data.title}</h1>
           <p className="text-secondaryText line-clamp-2">{data.content}</p>
@@ -104,6 +108,7 @@ export default async function ArticleItem({
           </div>
         </div>
       </Link>
+      )}
       <Pagination
         pathname={"/admin/administracao/assinaturas"}
         searchParams={searchParams}
