@@ -42,7 +42,7 @@ interface Ttheme {
   theme: string;
 }
 
-export default function Header({ theme }: Ttheme) {
+export default function Header() {
   // process.env.NUMBER pegar do banco
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
 
@@ -231,9 +231,9 @@ export default function Header({ theme }: Ttheme) {
                         <option disabled value="selecione">
                           Selecione
                         </option>
-                        <option value={theme}>
+                        {/* <option value={theme}>
                           {theme}
-                        </option>
+                        </option> */}
                       </select>
                     </FormFieldGrp>
                     {errors.themeSelect && (

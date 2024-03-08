@@ -15,7 +15,8 @@ export interface TFilterOptions {
   }
 }
 
-export function Filters({
+export function Filters(
+  {
   menuOptions,
 }: {
   menuOptions: TFilterOptions[]

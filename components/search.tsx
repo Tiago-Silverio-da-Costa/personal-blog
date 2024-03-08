@@ -5,7 +5,6 @@ import { FieldValues, useForm } from "react-hook-form"
 import { getPaginationParams, getQueryParams } from "./admin/utils";
 import { IoMdSearch } from "react-icons/io";
 
-
 export default function Search() {
   const router = useRouter();
   const pathname = usePathname()
@@ -45,7 +44,7 @@ export default function Search() {
         router.push(`${pathname}`)
       } else {
         const queryUrl = new URLSearchParams(queryParams)
-        router.push(`${pathname}?${queryParams.toString()}`)
+        router.push(`${pathname}?${queryUrl.toString()}`)
       }
     }
   }

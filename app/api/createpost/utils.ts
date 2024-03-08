@@ -30,7 +30,7 @@ export type TCreateBlog = yup.InferType<typeof createBlogSchema>;
 export async function getPostById(id: string) {
   const post = await prisma.post.findUnique({
     where: {
-      id: "4a77ab5c-bf1c-415b-8fd3-dbbd47532752",
+      id: id,
     }, 
     select: {
       id: true,

@@ -35,13 +35,9 @@ export default async function Page({
   if (!event) { return }
   return (
     <>
-      {data?.map((theme) => (
-        <div key={theme.theme}>
-          <Header theme={theme.theme} />
-          <Article id={event.id} />
-          <Footer />
-        </div>
-      ))}
+      <Header />
+      <Article id={event.id} />
+      <Footer />
     </>
   )
 }

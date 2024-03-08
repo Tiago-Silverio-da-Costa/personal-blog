@@ -46,16 +46,17 @@ export function getPaginationParams(
     page,
     perPage,
     search,
-  }
+  };
 }
 
-export function getQueryParams(params?: {
-  [key: string]: string | number | undefined | null,
-}, searchParams?: ReadonlyURLSearchParams) {
-
-
+export function getQueryParams(
+  params?: {
+    [key: string]: string | number | undefined | null;
+  },
+  searchParams?: ReadonlyURLSearchParams
+) {
   var search: {
-    [key: string]: string | number | undefined | null
+    [key: string]: string | number | undefined | null;
   } = {};
 
   if (searchParams)
@@ -63,13 +64,41 @@ export function getQueryParams(params?: {
       search[key] = value;
     });
 
-    return Object.entries({ ...search, ...params }).reduce((acc, [key, value]) => {
+  return Object.entries({ ...search, ...params }).reduce(
+    (acc, [key, value]) => {
       if (value) {
-        if (key == "status" && value == "selecione") return acc;
+        // if (key == "status" && value == "selecione") return acc;
         if (key == "page" && value == "1") return acc;
 
-        return { ...acc, [key]: value.toString()}
+        return { ...acc, [key]: value.toString() };
       }
       return acc;
-    }, {} as { [key: string]: string})
+    },
+    {} as { [key: string]: string }
+  );
+}
+
+export type TCustomFilterParams = ReturnType<typeof getCustomFilterParams>;
+export function getCustomFilterParams(
+  searchParams?:
+    | ReadonlyURLSearchParams
+    | URLSearchParams
+    | { [key: string]: string | undefined }
+) {
+  var initUser: string | undefined | null;
+
+  if (
+    searchParams instanceof ReadonlyURLSearchParams ||
+    searchParams instanceof URLSearchParams
+  ) {
+    initUser = searchParams?.get("user");
+  } else {
+    initUser = searchParams?.user;
+  }
+
+  const user = initUser ?? undefined;
+
+  return {
+    user,
+  };
 }
