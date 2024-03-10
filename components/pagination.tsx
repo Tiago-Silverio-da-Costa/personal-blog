@@ -9,7 +9,7 @@ export default function Pagination({
 }: {
   pathname: string;
   searchParams?: { [key: string]: string | undefined };
-  valuesCount?: number;
+  valuesCount: number;
 }) {
   const paginationParams = getPaginationParams(searchParams);
   const queryParams = getQueryParams({ ...searchParams, ...paginationParams })
@@ -20,7 +20,7 @@ export default function Pagination({
   const valuesPerPage = paginationParams.perPage;
 
   const pagesCount = Math.ceil(
-    // valuesCount /
+    valuesCount /
    (valuesPerPage ?? 10));
 
   const startPage =

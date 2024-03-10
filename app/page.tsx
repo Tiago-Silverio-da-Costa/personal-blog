@@ -6,6 +6,7 @@ import Pagination from "@/components/pagination";
 import Search from "@/components/search";
 import { getArticles } from "./api/utils";
 import { Filters, TFilterOptions } from "@/components/filter";
+import { getPostById } from "./api/createpost/utils"
 
 export default async function Home({
   searchParams,
@@ -15,7 +16,7 @@ export default async function Home({
 
   const paginationParams = getPaginationParams(searchParams);
   const customFilterParams = getCustomFilterParams(searchParams);
-
+  
   const { data: articleData, count } = await getArticles({
     paginationParams,
     customFilterParams,
@@ -37,12 +38,12 @@ export default async function Home({
     {
       label: "Mostrar",
       slug: "perPage",
-      selected: !!perPage ? perPage : 10,
+      selected: !!perPage ? perPage : 5,
       options: {
+        5: 5,
         10: 10,
         25: 25,
-        50: 50,
-        100: 100
+        50: 50
       },
     },
   ]

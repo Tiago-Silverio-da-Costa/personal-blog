@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
         subtitle,
         theme,
         content,
+        
       },
       select: {
         id: true,

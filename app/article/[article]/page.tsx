@@ -4,7 +4,7 @@ import Header from "@/components/header";
 import prisma from "@/adapter/prisma"
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getPostById } from "../api/createpost/utils";
+import { getPostById } from "../../api/createpost/utils";
 
 async function getData(userId: string) {
 
@@ -30,9 +30,10 @@ export default async function Page({
   const data = await getData(session?.user?.email as string)
 
 
-  const event = await getPostById(articleId);
+  const event = await getPostById(session?.user?.email as string);
 
   if (!event) { return }
+  
   return (
     <>
       <Header />
