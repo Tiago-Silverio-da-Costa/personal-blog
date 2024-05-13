@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { TCreateBlog } from "./utils";
 import { prisma } from "@/adapter/db";
+import { toTitle } from "@/components/commom/utils";
 
 export async function POST(req: NextRequest) {
   if (req.headers.get("content-type") !== "application/json")
@@ -24,14 +25,27 @@ export async function POST(req: NextRequest) {
 
   const accessIp = req.headers.get("cf-connecting-ip");
 
-  let { title, subtitle, theme, content }: {} & TCreateBlog = await req.json();
+  let {
+    title,
+    subtitle,
+    // theme,
+    content,
+  }: TCreateBlog = await req.json();
+
+  title = toTitle(title?.trim() ?? "").substring(0, 100);
+  subtitle = toTitle(subtitle?.trim() ?? "").substring(0, 100);
+  content = (content?.trim() ?? "").substring(0, 10000);
 
   // validate post info
-  if (!title || !subtitle || !theme) {
+  if (
+    !title ||
+    !subtitle
+    // || !theme
+  ) {
     let fields = [];
     if (!title) fields.push("title");
     if (!subtitle) fields.push("subTitle");
-    if (!theme) fields.push("themeInput");
+    // if (!theme) fields.push("themeInput");
 
     return new NextResponse(
       JSON.stringify({
@@ -53,34 +67,34 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await prisma.post.create({
+    const post = await prisma.post.create({
       data: {
         title,
         subtitle,
-        theme,
+        // theme,
         content,
-        
       },
       select: {
         id: true,
       },
     });
-
-    return new NextResponse(
-      JSON.stringify({
-        status: "success",
-      } as ApiReturnSuccess),
-      {
-        status: 201,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin":
-            process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
-              : "*",
-        },
-      }
-    );
+    if (post.id) {
+      return new NextResponse(
+        JSON.stringify({
+          status: "success",
+        } as ApiReturnSuccess),
+        {
+          status: 201,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin":
+              process.env.VERCEL_ENV === "production"
+                ? "https://something.com"
+                : "*",
+          },
+        }
+      );
+    }
   } catch (err) {
     return new NextResponse(
       JSON.stringify({

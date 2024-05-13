@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import localFont from "next/font/local";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { TbBrandWhatsapp } from "react-icons/tb";
 import { TCreateBlog, createBlogSchema } from "@/app/api/createpost/utils";
@@ -38,12 +38,7 @@ const satoshi = localFont({
   ],
 })
 
-interface Ttheme {
-  theme: string;
-}
-
 export default function Header() {
-  // process.env.NUMBER pegar do banco
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
 
   const {
@@ -56,9 +51,9 @@ export default function Header() {
   } = useForm<TCreateBlog>({
     resolver: yupResolver(createBlogSchema),
     reValidateMode: "onSubmit",
-    defaultValues: {
-      themeSelect: "selecione"
-    }
+    // defaultValues: {
+    //   themeSelect: "selecione"
+    // }
   })
 
   const onSubmit = async (data: TCreateBlog) => {
@@ -81,7 +76,7 @@ export default function Header() {
         {
           title: "",
           subtitle: "",
-          theme: "",
+          // theme: "",
         },
         {
           keepIsSubmitted: true,
@@ -195,7 +190,7 @@ export default function Header() {
                         {...register("content")}
                         inputMode="text"
                         placeholder="Parágrafo"
-                        maxLength={100}
+                        maxLength={10000}
                         readOnly={isSubmitting}
                         cols={56}
                         rows={8}
@@ -207,7 +202,7 @@ export default function Header() {
                   </FormFieldWrapper>
                 </div>
 
-                <div className="flex items-start justify-between gap-8 mt-8 w-full">
+                {/* <div className="flex items-start justify-between gap-8 mt-8 w-full">
                   <FormFieldWrapper $error={!!errors.theme}>
                     <FormFieldGrp>
                       <input
@@ -231,16 +226,17 @@ export default function Header() {
                         <option disabled value="selecione">
                           Selecione
                         </option>
-                        {/* <option value={theme}>
+                        <option value={theme}>
                           {theme}
-                        </option> */}
+                        </option>
                       </select>
                     </FormFieldGrp>
                     {errors.themeSelect && (
                       <FormFieldError>{errors.themeSelect.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
-                </div>
+                  
+                </div> */}
                 <div className="flex items-start justify-end w-full gap-4 mt-8 pb-4">
                   <button
                     onClick={() => SetOpenPopup(!openPopup)}

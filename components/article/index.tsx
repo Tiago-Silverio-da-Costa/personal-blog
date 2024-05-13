@@ -85,6 +85,8 @@ async function ArticleHead({id}: {id: string}) {
   const data = await getData({id})
 
   if (!data) return
+  if (!data.author) return
+  if (!data.profission) return
 
   return (
     <div className="flex flex-col border-b-2 border-b-secondary/50 pb-6">
@@ -101,10 +103,10 @@ async function ArticleHead({id}: {id: string}) {
       </div>
 
       <div className="flex items-center gap-4 mt-8">
-        <Image className="rounded-full border-2 border-secondary scale-90" src={data.author?.profileImage as string} alt="Autor" width={50} height={50} />
+        <Image className="rounded-full border-2 border-secondary scale-90" src={data.author.profileImage as string} alt="Autor" width={50} height={50} />
         <div className="flex flex-col gap-2">
-          <p className={`${satoshi.className} text-sm text-secondary font-normal tracking-tighter leading-4`}>{data.author?.name}</p>
-          <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">{data.profission?.name}</p>
+          <p className={`${satoshi.className} text-sm text-secondary font-normal tracking-tighter leading-4`}>{data.author.name}</p>
+          <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">{data.profission.name}</p>
         </div>
       </div>
     </div>
@@ -115,11 +117,12 @@ async function ArticleBody({id}: {id: string}) {
   const data = await getData({id})
 
   if (!data) return
+  if (!data.content) return
 
   return (
     <div className="mx-auto w-5/6 max-w-3xl mt-16">
       <p className="text-lg tracking-tighter leading-6">
-        {data.content?.split("  ").map((paragraph, index) => (
+        {data.content.split("  ").map((paragraph, index) => (
           <Fragment key={index}>
             {paragraph}
             <br />

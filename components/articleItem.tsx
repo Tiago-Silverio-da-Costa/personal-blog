@@ -58,13 +58,10 @@ export default async function ArticleItem({
 
   if (!data) return
 
- 
-
-
   return (
     <section className="flex flex-col gap-6 bg-primary/10 py-8  mx-auto w-5/6 max-w-5xl">
       {articles.map((data, idx) =>
-        <Link key={idx} href={`/article?${data.id}`} className="flex gap-6 px-6 py-4 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
+        <Link key={idx} href={`/article/${data.id}`} className="flex gap-6 px-6 py-4 border-third border cursor-pointer transition-all duration-200 hover:border-secondaryText">
           <div className="flex flex-col gap-2">
             <h1 className={`${satoshi.className} text-2xl font-bold text-secondary`}>{data.title}</h1>
             <p className="text-secondaryText line-clamp-2">{data.content}</p>

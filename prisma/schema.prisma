@@ -36,7 +36,7 @@ model Post {
   id           String      @id @default(uuid())
   title        String
   subtitle     String
-  theme        String
+  theme        String?
   content      String?
   published    Boolean     @default(false)
   author       User?       @relation(fields: [authorId], references: [id])
