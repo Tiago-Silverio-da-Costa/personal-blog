@@ -23,29 +23,34 @@ export async function POST(req: NextRequest) {
       }
     );
 
-  const accessIp = req.headers.get("cf-connecting-ip");
-
   let {
     title,
     subtitle,
-    // theme,
+    theme,
+    // author,
     content,
   }: TCreateBlog = await req.json();
 
   title = toTitle(title?.trim() ?? "").substring(0, 100);
   subtitle = toTitle(subtitle?.trim() ?? "").substring(0, 100);
   content = (content?.trim() ?? "").substring(0, 10000);
+  // author = toTitle(title?.trim() ?? "").substring(0, 25);
 
   // validate post info
   if (
-    !title ||
-    !subtitle
-    // || !theme
+    !title 
+    || !subtitle
+    || !content
+    || !theme
+    // || !author
+    
   ) {
     let fields = [];
     if (!title) fields.push("title");
     if (!subtitle) fields.push("subTitle");
-    // if (!theme) fields.push("themeInput");
+    if (!content) fields.push("content");
+    if (!theme) fields.push("theme");
+    // if (!author) fields.push("author")
 
     return new NextResponse(
       JSON.stringify({
@@ -67,39 +72,37 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const post = await prisma.post.create({
+    await prisma.post.create({
       data: {
         title,
         subtitle,
-        // theme,
         content,
+        theme,
       },
       select: {
         id: true,
       },
     });
-    if (post.id) {
-      return new NextResponse(
-        JSON.stringify({
-          status: "success",
-        } as ApiReturnSuccess),
-        {
-          status: 201,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin":
-              process.env.VERCEL_ENV === "production"
-                ? "https://something.com"
-                : "*",
-          },
-        }
-      );
-    }
+    return new NextResponse(
+      JSON.stringify({
+        status: "success",
+      } as ApiReturnSuccess),
+      {
+        status: 201,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":
+            process.env.VERCEL_ENV === "production"
+              ? "https://something.com"
+              : "*",
+        },
+      }
+    );
   } catch (err) {
     return new NextResponse(
       JSON.stringify({
         status: "error",
-        message: "Erro ao criar post!",
+        message: err,
         error: "createPost-003",
       } as ApiReturnError),
       {

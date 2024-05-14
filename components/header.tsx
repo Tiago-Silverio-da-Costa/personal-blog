@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import localFont from "next/font/local";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { TbBrandWhatsapp } from "react-icons/tb";
 import { TCreateBlog, createBlogSchema } from "@/app/api/createpost/utils";
@@ -12,6 +12,7 @@ import { FormBtn, FormFieldError, FormFieldGrp, FormFieldWrapper, Spin } from "@
 import { IoMdClose } from "react-icons/io";
 import Alert from "./commom/alert";
 import { PiSpinnerBold } from "react-icons/pi";
+import { TPostsData } from "@/app/api/getpostdata/utils";
 
 const satoshi = localFont({
   src: [
@@ -40,6 +41,8 @@ const satoshi = localFont({
 
 export default function Header() {
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
+  const [posts, setPosts] = useState<TPostsData>();
+
 
   const {
     handleSubmit,
@@ -51,13 +54,31 @@ export default function Header() {
   } = useForm<TCreateBlog>({
     resolver: yupResolver(createBlogSchema),
     reValidateMode: "onSubmit",
-    // defaultValues: {
-    //   themeSelect: "selecione"
-    // }
+    defaultValues: {
+      theme: "selecione"
+    }
   })
+  const getPosts = async () => {
+    const response = await fetch("/api/getpostdata", {
+      credentials: "include",
+      cache: "no-cache",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+
+    const posts = await response.json()
+    setPosts(posts.data)
+  } 
+  useEffect(() => {
+    getPosts()
+  } , [])
 
   const onSubmit = async (data: TCreateBlog) => {
     clearErrors()
+
+ 
 
     const responseData = await fetch("/api/createpost", {
       credentials: "include",
@@ -76,7 +97,8 @@ export default function Header() {
         {
           title: "",
           subtitle: "",
-          // theme: "",
+          theme: "",
+          content: ""
         },
         {
           keepIsSubmitted: true,
@@ -112,9 +134,9 @@ export default function Header() {
       type: "custom",
       message: "Ocorreu um erro inesperado! Verifique os dados e tente novamente."
     })
+
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }
-
 
   return (
     <section className="border-b-third border-b">
@@ -148,8 +170,7 @@ export default function Header() {
                 )}
                 {isSubmitSuccessful && (
                   <Alert type="success">
-                    Cadastro realizado com sucesso! Em breve divulgaremos a lista dos
-                    inscritos selecionados.
+                    Post criado com sucesso!
                   </Alert>
                 )}
                 <div className="flex items-start justify-between gap-8 mt-6 w-full">
@@ -202,8 +223,8 @@ export default function Header() {
                   </FormFieldWrapper>
                 </div>
 
-                {/* <div className="flex items-start justify-between gap-8 mt-8 w-full">
-                  <FormFieldWrapper $error={!!errors.theme}>
+                <div className="flex items-start justify-between gap-8 mt-8 w-full">
+                  {/* <FormFieldWrapper $error={!!errors.theme}>
                     <FormFieldGrp>
                       <input
                         {...register("theme")}
@@ -216,27 +237,27 @@ export default function Header() {
                     {errors.theme && (
                       <FormFieldError>{errors.theme.message}</FormFieldError>
                     )}
-                  </FormFieldWrapper>
-                  <FormFieldWrapper $error={!!errors.themeSelect}>
+                  </FormFieldWrapper> */}
+                  <FormFieldWrapper $error={!!errors.theme}>
                     <FormFieldGrp>
                       <select
                         disabled={isSubmitting}
-                        {...register("themeSelect")}
+                        {...register("theme")}
                       >
                         <option disabled value="selecione">
                           Selecione
                         </option>
-                        <option value={theme}>
-                          {theme}
-                        </option>
+                        {posts?.map((post) => (
+                          <option key={post.id} value={post.theme}>{post.theme}</option>
+                        ))}
                       </select>
                     </FormFieldGrp>
-                    {errors.themeSelect && (
-                      <FormFieldError>{errors.themeSelect.message}</FormFieldError>
+                    {errors.theme && (
+                      <FormFieldError>{errors.theme.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
-                  
-                </div> */}
+
+                </div>
                 <div className="flex items-start justify-end w-full gap-4 mt-8 pb-4">
                   <button
                     onClick={() => SetOpenPopup(!openPopup)}
