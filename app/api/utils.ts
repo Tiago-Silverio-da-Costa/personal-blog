@@ -15,13 +15,13 @@ export function getQuery({
   paginationParams: TPaginationParams;
   customFilterParams: TCustomFilterParams;
 }) {
-  // const authorId =
-  //   customFilterParams.user && customFilterParams.user
-  //     ? customFilterParams.user
-  //     : undefined;
+  const authorId =
+    customFilterParams.user && customFilterParams.user
+      ? customFilterParams.user
+      : undefined;
 
   var where: Prisma.PostWhereInput = {
-    // authorId,
+    authorId,
   };
 
   //search
@@ -83,22 +83,23 @@ async function getArticleData(query: TQuery) {
       title: true,
       theme: true,
       content: true,
+      subtitle: true,
       createdAt: true,
-      // authorId: true,
-      // author: {
-      //   select: {
-      //     name: true,
-      //   },
-      // },
+      authorId: true,
+      author: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
 
   const data = articleData.map((article) => {
-    // const authorNameW = article.author.name.split(" ");
-    // const authorName =
-    //   authorNameW.length > 1
-    //     ? `${authorNameW[0]} ${authorNameW.at(-1)}`
-    //     : authorNameW[0];
+    const authorNameW = article.author.name.split(" ");
+    const authorName =
+      authorNameW.length > 1
+        ? `${authorNameW[0]} ${authorNameW.at(-1)}`
+        : authorNameW[0];
 
     return {
       id: article.id,
@@ -106,8 +107,8 @@ async function getArticleData(query: TQuery) {
       theme: article.theme,
       content: article.content,
       createdAt: article.createdAt,
-      // authorId: article.authorId,
-      // authorName: authorName,
+      authorId: article.authorId,
+      authorName: authorName,
     };
   });
 

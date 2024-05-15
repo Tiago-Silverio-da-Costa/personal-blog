@@ -15,14 +15,14 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  email        String     @unique
+  id           String      @id @default(uuid())
+  email        String?     @unique
   name         String
-  profileImage String
-  password     String
+  profileImage String?
+  password     String?
   Posts        Post[]
-  profession   Profession @relation(fields: [profissionId], references: [id])
-  profissionId String
+  profession   Profession? @relation(fields: [professionId], references: [id])
+  professionId String?
 }
 
 model Profession {
@@ -38,10 +38,10 @@ model Post {
   subtitle     String
   theme        String
   content      String?
-  author       User?       @relation(fields: [authorId], references: [id])
+  author       User        @relation(fields: [authorId], references: [id])
   authorId     String
-  profession   Profession? @relation(fields: [profissionId], references: [id])
-  profissionId String
+  profession   Profession? @relation(fields: [professionId], references: [id])
+  professionId String
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 }

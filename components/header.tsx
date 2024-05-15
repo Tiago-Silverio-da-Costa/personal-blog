@@ -39,10 +39,13 @@ const satoshi = localFont({
   ],
 })
 
+function refreshPage(){
+  window.location.reload();
+} 
+
 export default function Header() {
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
   const [posts, setPosts] = useState<TPostsData>();
-
 
   const {
     handleSubmit,
@@ -55,7 +58,7 @@ export default function Header() {
     resolver: yupResolver(createBlogSchema),
     reValidateMode: "onSubmit",
     defaultValues: {
-      theme: "selecione",
+      existedTheme: "selecione",
       author: "selecione"
     }
   })
@@ -94,12 +97,13 @@ export default function Header() {
     })
 
     if (responseData.status === 201) {
+      refreshPage()
       reset(
         {
           title: "",
           subtitle: "",
-          theme: "",
           author: "",
+          createTheme: "",
           content: ""
         },
         {
@@ -226,22 +230,38 @@ export default function Header() {
                 </div>
 
                 <div className="flex items-start justify-between gap-8 mt-8 w-full">
-                  <FormFieldWrapper $error={!!errors.theme}>
+                  {/* select theme */}
+                  <FormFieldWrapper $error={!!errors.existedTheme}>
                     <FormFieldGrp>
                       <select
                         disabled={isSubmitting}
-                        {...register("theme")}
+                        {...register("existedTheme")}
                       >
                         <option disabled value="selecione">
-                          Selecione
+                          Tema
                         </option>
                         {posts?.map((post) => (
                           <option key={post.id} value={post.theme}>{post.theme}</option>
                         ))}
                       </select>
                     </FormFieldGrp>
-                    {errors.theme && (
-                      <FormFieldError>{errors.theme.message}</FormFieldError>
+                    {errors.existedTheme && (
+                      <FormFieldError>{errors.existedTheme.message}</FormFieldError>
+                    )}
+                  </FormFieldWrapper>
+                  {/* create theme */}
+                  <FormFieldWrapper $error={!!errors.createTheme}>
+                    <FormFieldGrp>
+                      <input
+                        {...register("createTheme")}
+                        inputMode="text"
+                        placeholder="Criar Tema"
+                        maxLength={100}
+                        readOnly={isSubmitting}
+                      />
+                    </FormFieldGrp>
+                    {errors.createTheme && (
+                      <FormFieldError>{errors.createTheme.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
 
@@ -252,7 +272,7 @@ export default function Header() {
                         {...register("author")}
                       >
                         <option disabled value="selecione">
-                          Selecione
+                          Autor
                         </option>
                         {posts?.map((post) => (
                           <option key={post.id} value={post.author?.name}>{post.author?.name}</option>

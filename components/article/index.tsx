@@ -74,7 +74,7 @@ async function getData({id}: {id: string}) {
       subtitle: true,
       theme: true,
       author: true,
-      profission: true,
+      profession: true,
       content: true,
     }
   })
@@ -86,7 +86,7 @@ async function ArticleHead({id}: {id: string}) {
 
   if (!data) return
   if (!data.author) return
-  if (!data.profission) return
+  if (!data.profession) return
 
   return (
     <div className="flex flex-col border-b-2 border-b-secondary/50 pb-6">
@@ -106,7 +106,7 @@ async function ArticleHead({id}: {id: string}) {
         <Image className="rounded-full border-2 border-secondary scale-90" src={data.author.profileImage as string} alt="Autor" width={50} height={50} />
         <div className="flex flex-col gap-2">
           <p className={`${satoshi.className} text-sm text-secondary font-normal tracking-tighter leading-4`}>{data.author.name}</p>
-          <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">{data.profission.name}</p>
+          <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">{data.profession.name}</p>
         </div>
       </div>
     </div>
@@ -140,7 +140,6 @@ export default function Article({id}: {id: string}) {
     <div className="mx-auto w-5/6 max-w-5xl py-6">
       <ArticleHead id={id} />
       <ArticleBody id={id} />
-      
     </div>
   )
 }
