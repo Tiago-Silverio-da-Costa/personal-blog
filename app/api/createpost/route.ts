@@ -27,14 +27,14 @@ export async function POST(req: NextRequest) {
     title,
     subtitle,
     theme,
-    // author,
+    author,
     content,
   }: TCreateBlog = await req.json();
 
   title = toTitle(title?.trim() ?? "").substring(0, 100);
   subtitle = toTitle(subtitle?.trim() ?? "").substring(0, 100);
   content = (content?.trim() ?? "").substring(0, 10000);
-  // author = toTitle(title?.trim() ?? "").substring(0, 25);
+  author = toTitle(title?.trim() ?? "").substring(0, 25);
 
   // validate post info
   if (
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     || !subtitle
     || !content
     || !theme
-    // || !author
+    || !author
     
   ) {
     let fields = [];
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     if (!subtitle) fields.push("subTitle");
     if (!content) fields.push("content");
     if (!theme) fields.push("theme");
-    // if (!author) fields.push("author")
+    if (!author) fields.push("author")
 
     return new NextResponse(
       JSON.stringify({
@@ -78,6 +78,9 @@ export async function POST(req: NextRequest) {
         subtitle,
         content,
         theme,
+        // author: {
+
+        // }
       },
       select: {
         id: true,

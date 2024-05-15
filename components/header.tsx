@@ -55,7 +55,8 @@ export default function Header() {
     resolver: yupResolver(createBlogSchema),
     reValidateMode: "onSubmit",
     defaultValues: {
-      theme: "selecione"
+      theme: "selecione",
+      author: "selecione"
     }
   })
   const getPosts = async () => {
@@ -98,6 +99,7 @@ export default function Header() {
           title: "",
           subtitle: "",
           theme: "",
+          author: "",
           content: ""
         },
         {
@@ -224,20 +226,6 @@ export default function Header() {
                 </div>
 
                 <div className="flex items-start justify-between gap-8 mt-8 w-full">
-                  {/* <FormFieldWrapper $error={!!errors.theme}>
-                    <FormFieldGrp>
-                      <input
-                        {...register("theme")}
-                        inputMode="text"
-                        placeholder="Tema"
-                        maxLength={100}
-                        readOnly={isSubmitting}
-                      />
-                    </FormFieldGrp>
-                    {errors.theme && (
-                      <FormFieldError>{errors.theme.message}</FormFieldError>
-                    )}
-                  </FormFieldWrapper> */}
                   <FormFieldWrapper $error={!!errors.theme}>
                     <FormFieldGrp>
                       <select
@@ -254,6 +242,25 @@ export default function Header() {
                     </FormFieldGrp>
                     {errors.theme && (
                       <FormFieldError>{errors.theme.message}</FormFieldError>
+                    )}
+                  </FormFieldWrapper>
+
+                  <FormFieldWrapper $error={!!errors.author}>
+                    <FormFieldGrp>
+                      <select
+                        disabled={isSubmitting}
+                        {...register("author")}
+                      >
+                        <option disabled value="selecione">
+                          Selecione
+                        </option>
+                        {posts?.map((post) => (
+                          <option key={post.id} value={post.author?.name}>{post.author?.name}</option>
+                        ))}
+                      </select>
+                    </FormFieldGrp>
+                    {errors.author && (
+                      <FormFieldError>{errors.author.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
 

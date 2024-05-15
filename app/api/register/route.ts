@@ -9,12 +9,11 @@ import bcrypt from "bcryptjs";
 export async function POST(req: NextRequest) {
   if (req.headers.get("content-type") !== "application/json")
     return new NextResponse(
-      JSON.stringify(
-        {
-          status: "error",
-          message: "Formato inválido!",
-          error: "createRegisterAuthor-001",
-        } as ApiReturnError & { fields: (keyof TAuthorRegister)[]}),
+      JSON.stringify({
+        status: "error",
+        message: "Formato inválido!",
+        error: "createRegisterAuthor-001",
+      } as ApiReturnError & { fields: (keyof TAuthorRegister)[] }),
       {
         status: 400,
         headers: {
@@ -37,33 +36,32 @@ export async function POST(req: NextRequest) {
   confirmPassword = confirmPassword.trim().substring(0, 30);
 
   if (
-    !name 
-    || name == "" 
-    || name.split(" ").length < 2 
-    || !email 
-    || !isEmail(email)
-    || !profession 
-    || !password 
-    || !confirmPassword
+    !name ||
+    name == "" ||
+    name.split(" ").length < 2 ||
+    !email ||
+    !isEmail(email) ||
+    !profession ||
+    !password ||
+    !confirmPassword
   ) {
     let fields: (keyof TAuthorRegister)[] = [];
-    if (!name || name == "" || name.split(" ").length < 2)
-      fields.push("name");
-    if (!email || !isEmail(email))
-       fields.push("email");
+    if (!name || name == "" || name.split(" ").length < 2) fields.push("name");
+    if (!email || !isEmail(email)) fields.push("email");
     if (!profession) fields.push("profession");
-    !password || password.length < 8 ||
-    !(password.length <= 24) ||
-    !confirmPassword ||
-    !isStrongPassword(password, { minSymbols: 0 }) ||
-    password !== confirmPassword
+    !password ||
+      password.length < 8 ||
+      !(password.length <= 24) ||
+      !confirmPassword ||
+      !isStrongPassword(password, { minSymbols: 0 }) ||
+      password !== confirmPassword;
 
     return new NextResponse(
       JSON.stringify({
         status: "error",
         message: "Dados inválidos!",
         error: "createRegisterAuthor-002",
-      } as ApiReturnError & { fields: (keyof TAuthorRegister)[]}),
+      } as ApiReturnError & { fields: (keyof TAuthorRegister)[] }),
       {
         status: 400,
         headers: {
@@ -77,23 +75,21 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const hashedPassword = await bcrypt.hash(
-    password,
-    process.env.BCRYPT_SALT ?? 10
-  )
-
   // check if author already exists
   const authorAlreadyExists = await prisma.user.findFirst({
     where: {
-      OR: [{
-        email,
-      }, {
-        name,
-      }],
+      OR: [
+        {
+          email,
+        },
+        {
+          name,
+        },
+      ],
     },
     select: {
       id: true,
-    }
+    },
   });
 
   if (authorAlreadyExists) {
@@ -111,10 +107,33 @@ export async function POST(req: NextRequest) {
             process.env.VERCEL_ENV === "production"
               ? "https://something.com"
               : "*",
-        }
+        },
       }
-    )
+    );
   }
+
+  const hashedPassword = await bcrypt.hash(
+    password,
+    process.env.BCRYPT_SALT ?? 10
+  );
+
+  await prisma.user.create({
+    data: {
+      name,
+      email,
+      profession: {
+        create: {
+          name: profession,
+        },
+      },
+      password: hashedPassword,
+      profileImage: "https://avatars.githubusercontent.com/u/72054311?v=4",
+    },
+    select: {
+      id: true,
+      email: true,
+    },
+  });
   return new NextResponse(
     JSON.stringify({
       status: "success",
@@ -127,7 +146,7 @@ export async function POST(req: NextRequest) {
           process.env.VERCEL_ENV === "production"
             ? "https://something.com"
             : "*",
-      }
+      },
     }
-  )
+  );
 }

@@ -66,30 +66,29 @@ export default function AuthorRegister() {
             message: response.message,
           });
 
-        if (response.fields) 
+        if (response.fields)
           response.fields.forEach((field) => {
-        setError(field, {
-          type: "custom",
-          message: "Verifique o campo!",
-        });
-      });
-      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-      return;
+            setError(field, {
+              type: "custom",
+              message: "Verifique o campo!",
+            });
+          });
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        return;
       }
+      setError("root", {
+        type: "custom",
+        message: "Ocoreu um erro inesperado! Verifique os dados e tente novamente."
+      })
+
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     }
-
-    setError("root", {
-      type: "custom",
-      message: "Ocoreu um erro inesperado! Verifique os dados e tente novamente."
-    })
-
-    window.scrollTo({ top: 0, left:0, behavior: "smooth" });
   };
 
   return (
     <div className="flex items-center justify-center py-8">
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(formSubmit)}>
-      <h1 className="text-2xl font-bold">Cadastre-se como autor</h1>
+        <h1 className="text-2xl font-bold">Cadastre-se como autor</h1>
         <input
           type="text"
           placeholder="Nome"

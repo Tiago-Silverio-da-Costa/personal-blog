@@ -4,7 +4,6 @@ import { prisma } from "@/adapter/db";
 export const createBlogSchema = yup.object({
   title: yup.string().trim().required("Campo obrigatório"),
   subtitle: yup.string().trim().required("Campo obrigatório"),
-  // theme: yup.string().trim(),
   theme: yup.string().trim(),
   author: yup.string().trim(),
   content: yup.string().trim().required("Campo obrigatório"),
