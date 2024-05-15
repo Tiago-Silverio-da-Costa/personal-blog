@@ -1,6 +1,4 @@
-import { prisma } from "../../../adapter/db";
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { getPostsdata } from "./utils";
 
 export async function GET(req: NextRequest) {
