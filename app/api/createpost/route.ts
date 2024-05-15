@@ -28,31 +28,29 @@ export async function POST(req: NextRequest) {
     subtitle,
     createTheme,
     existedTheme,
-    author,
+    existedAuthor,
     content,
+    profession,
   }: TCreateBlog = await req.json();
 
   title = toTitle(title?.trim() ?? "").substring(0, 100);
   subtitle = toTitle(subtitle?.trim() ?? "").substring(0, 100);
   content = (content?.trim() ?? "").substring(0, 10000);
-  author = toTitle(title?.trim() ?? "").substring(0, 25);
+  existedAuthor = toTitle(existedAuthor?.trim() ?? "").substring(0, 25);
   existedTheme = toTitle(existedTheme?.trim() ?? "").substring(0, 25);
   createTheme = toTitle(createTheme?.trim() ?? "").substring(0, 25);
+  profession = toTitle(profession?.trim() ?? "").substring(0, 25);
 
   // validate post info
-  if (
-    !title ||
-    !subtitle ||
-    !content ||
-    !author
-  ) {
+  if (!title || !subtitle || !content || !existedAuthor || !profession) {
     let fields = [];
     if (!title) fields.push("title");
     if (!subtitle) fields.push("subTitle");
     if (!content) fields.push("content");
+    if (!existedAuthor) fields.push("existedAuthor");
+    if (!profession) fields.push("profession");
     if (createTheme === "") fields.push("existedTheme");
     if (existedTheme === "") fields.push("createTheme");
-    if (!author) fields.push("author");
 
     return new NextResponse(
       JSON.stringify({
@@ -80,7 +78,7 @@ export async function POST(req: NextRequest) {
     },
     select: {
       id: true,
-    }
+    },
   });
 
   if (themeAlreadyExists) {
@@ -104,34 +102,72 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const professionData = await prisma.profession.findFirst({
+      where: {
+        name: profession,
+      },
+    });
+
+    if (!professionData) {
+      return new NextResponse(
+        JSON.stringify({
+          status: "error",
+          message: "Profissão não encontrada!",
+          error: "createPost-005",
+        } as ApiReturnError),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin":
+              process.env.VERCEL_ENV === "production"
+                ? "https://something.com"
+                : "*",
+          },
+        }
+      );
+    }
+
+    const authorData = await prisma.user.findFirst({
+      where: {
+        name: existedAuthor,
+        profileImage: "https://avatars.githubusercontent.com/u/72054311?v=4",
+      },
+    });
+    if (!authorData) {
+      return new NextResponse(
+        JSON.stringify({
+          status: "error",
+          message: "Autor não encontrado!",
+          error: "createPost-006",
+        } as ApiReturnError),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin":
+              process.env.VERCEL_ENV === "production"
+                ? "https://something.com"
+                : "*",
+          },
+        }
+      );
+    }
+
     await prisma.post.create({
       data: {
         title,
         subtitle,
         content,
-        theme: createTheme === "" ? existedTheme : createTheme,
-        author: {
-          create: {
-            name: author,
-            profileImage:
-              "https://avatars.githubusercontent.com/u/72054311?v=4",
-            profession: {
-              create: {
-                name: "Desenvolvedor",
-              },
-            },
-          },
-        },
-        profession: {
-          create: {
-            name: "Desenvolvedor",
-          },
-        },
+        theme: createTheme,
+        authorId: authorData.id,
+        professionId: professionData.id,
       },
       select: {
         id: true,
       },
     });
+
     return new NextResponse(
       JSON.stringify({
         status: "success",
@@ -152,7 +188,7 @@ export async function POST(req: NextRequest) {
       JSON.stringify({
         status: "error",
         message: err,
-        error: "createPost-003",
+        error: "createPost-007",
       } as ApiReturnError),
       {
         status: 500,

@@ -38,10 +38,10 @@ model Post {
   subtitle     String
   theme        String
   content      String?
-  author       User        @relation(fields: [authorId], references: [id])
-  authorId     String
+  author       User?       @relation(fields: [authorId], references: [id])
+  authorId     String?
   profession   Profession? @relation(fields: [professionId], references: [id])
-  professionId String
+  professionId String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 }

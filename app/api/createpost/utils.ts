@@ -6,8 +6,9 @@ export const createBlogSchema = yup.object({
   subtitle: yup.string().trim().required("Campo obrigatório"),
   createTheme: yup.string().trim(),
   existedTheme: yup.string().trim(),
-  author: yup.string().trim().required("Campo obrigatório"),
+  existedAuthor: yup.string().trim().required("Campo obrigatório"),
   content: yup.string().trim().required("Campo obrigatório"),
+  profession: yup.string().trim().required("Campo obrigatório"),
 });
 export type TCreateBlog = yup.InferType<typeof createBlogSchema>;
 

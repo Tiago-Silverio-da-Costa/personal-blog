@@ -13,6 +13,7 @@ import { IoMdClose } from "react-icons/io";
 import Alert from "./commom/alert";
 import { PiSpinnerBold } from "react-icons/pi";
 import { TPostsData } from "@/app/api/getpostdata/utils";
+import { TUsersData } from "@/app/api/getusersdata/utils";
 
 const satoshi = localFont({
   src: [
@@ -46,6 +47,7 @@ function refreshPage(){
 export default function Header() {
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
   const [posts, setPosts] = useState<TPostsData>();
+  const [users, setUsers] = useState<TUsersData>();
 
   const {
     handleSubmit,
@@ -59,7 +61,8 @@ export default function Header() {
     reValidateMode: "onSubmit",
     defaultValues: {
       existedTheme: "selecione",
-      author: "selecione"
+      existedAuthor: "selecione",
+      profession: "selecione"
     }
   })
   const getPosts = async () => {
@@ -75,15 +78,28 @@ export default function Header() {
     const posts = await response.json()
     setPosts(posts.data)
   } 
+
+  const getUsers = async () => {
+    const response = await fetch("/api/getusersdata", {
+      credentials: "include",
+      cache: "no-cache",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+
+    const users = await response.json()
+    setUsers(users.data)
+  } 
   useEffect(() => {
     getPosts()
+    getUsers()
   } , [])
 
   const onSubmit = async (data: TCreateBlog) => {
     clearErrors()
-
  
-
     const responseData = await fetch("/api/createpost", {
       credentials: "include",
       cache: "no-cache",
@@ -102,8 +118,9 @@ export default function Header() {
         {
           title: "",
           subtitle: "",
-          author: "",
           createTheme: "",
+          existedAuthor: "",
+          profession: "",
           content: ""
         },
         {
@@ -230,7 +247,6 @@ export default function Header() {
                 </div>
 
                 <div className="flex items-start justify-between gap-8 mt-8 w-full">
-                  {/* select theme */}
                   <FormFieldWrapper $error={!!errors.existedTheme}>
                     <FormFieldGrp>
                       <select
@@ -249,7 +265,6 @@ export default function Header() {
                       <FormFieldError>{errors.existedTheme.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
-                  {/* create theme */}
                   <FormFieldWrapper $error={!!errors.createTheme}>
                     <FormFieldGrp>
                       <input
@@ -265,22 +280,41 @@ export default function Header() {
                     )}
                   </FormFieldWrapper>
 
-                  <FormFieldWrapper $error={!!errors.author}>
+                  <FormFieldWrapper $error={!!errors.existedAuthor}>
                     <FormFieldGrp>
                       <select
                         disabled={isSubmitting}
-                        {...register("author")}
+                        {...register("existedAuthor")}
                       >
                         <option disabled value="selecione">
                           Autor
                         </option>
-                        {posts?.map((post) => (
-                          <option key={post.id} value={post.author?.name}>{post.author?.name}</option>
+                        {users?.map((users) => (
+                          <option key={users.id} value={users.name}>{users.name}</option>
                         ))}
                       </select>
                     </FormFieldGrp>
-                    {errors.author && (
-                      <FormFieldError>{errors.author.message}</FormFieldError>
+                    {errors.existedAuthor && (
+                      <FormFieldError>{errors.existedAuthor.message}</FormFieldError>
+                    )}
+                  </FormFieldWrapper>
+                  
+                  <FormFieldWrapper $error={!!errors.profession}>
+                    <FormFieldGrp>
+                      <select
+                        disabled={isSubmitting}
+                        {...register("profession")}
+                      >
+                        <option disabled value="selecione">
+                          Autor
+                        </option>
+                        {users?.map((users) => (
+                          <option key={users.id} value={users.profession?.name}>{users.profession?.name}</option>
+                        ))}
+                      </select>
+                    </FormFieldGrp>
+                    {errors.profession && (
+                      <FormFieldError>{errors.profession.message}</FormFieldError>
                     )}
                   </FormFieldWrapper>
 

@@ -95,11 +95,11 @@ async function getArticleData(query: TQuery) {
   });
 
   const data = articleData.map((article) => {
-    const authorNameW = article.author.name.split(" ");
-    const authorName =
-      authorNameW.length > 1
-        ? `${authorNameW[0]} ${authorNameW.at(-1)}`
-        : authorNameW[0];
+    // const authorNameW = article.author.name.split(" ");
+    // const authorName =
+    //   authorNameW.length > 1
+    //     ? `${authorNameW[0]} ${authorNameW.at(-1)}`
+    //     : authorNameW[0];
 
     return {
       id: article.id,
@@ -108,7 +108,7 @@ async function getArticleData(query: TQuery) {
       content: article.content,
       createdAt: article.createdAt,
       authorId: article.authorId,
-      authorName: authorName,
+      // authorName: authorName,
     };
   });
 
