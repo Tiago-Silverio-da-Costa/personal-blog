@@ -1,7 +1,8 @@
 import Image from "next/image";
 import localFont from "next/font/local";
 import prisma from "@/adapter/prisma"
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import ReadingText from "./readingText";
 
 const albra = localFont({
   src: [
@@ -81,18 +82,20 @@ async function getData({id}: {id: string}) {
   return data
 }
 
+
 async function ArticleHead({id}: {id: string}) {
   const data = await getData({id})
-
+  
   if (!data) return
   if (!data.author) return
   if (!data.profession) return
+  if (!data.content) return
 
   return (
     <div className="flex flex-col border-b-2 border-b-secondary/50 pb-6">
       <div className="flex items-center gap-4">
         <p className={`${satoshi.className} rounded-lg uppercase border border-secondary px-4 py-2 font-medium text-secondary text-xs tracking-tighter`}>{data.theme}</p>
-        <p className={`${satoshi.className} uppercase font-light text-xs text-secondary tracking-tighter`}>9 minutos de leitura</p>
+        <ReadingText content={data.content} />
       </div>
 
       <div className="flex flex-col">
