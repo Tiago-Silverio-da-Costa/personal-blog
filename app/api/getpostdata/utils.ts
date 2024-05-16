@@ -7,7 +7,11 @@ export async function getPostsdata() {
     select: {
       id: true,
       title: true,
-      theme: true,
+      Theme: {
+        select: {
+          name: true,
+        },
+      },
       content: true,
       createdAt: true,
       author: {

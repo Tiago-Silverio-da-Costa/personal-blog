@@ -6,7 +6,6 @@ import Pagination from "@/components/pagination";
 import Search from "@/components/search";
 import { getArticles } from "./api/utils";
 import { Filters, TFilterOptions } from "@/components/filter";
-import { getPostById } from "./api/createpost/utils"
 
 export default async function Home({
   searchParams,
@@ -16,7 +15,7 @@ export default async function Home({
 
   const paginationParams = getPaginationParams(searchParams);
   const customFilterParams = getCustomFilterParams(searchParams);
-  
+
   const { data: articleData, count } = await getArticles({
     paginationParams,
     customFilterParams,
@@ -61,8 +60,7 @@ export default async function Home({
         {articleData.length > 0 ? (
           <ArticleItem articles={articleData} />
         ) : (
-          <p>Nenhum artigo encontrado</p>
-
+          <p className="flex items-center min-h-screen">Nenhum artigo encontrado</p>
         )}
         <Pagination
           pathname={"/"}

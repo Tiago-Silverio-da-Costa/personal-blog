@@ -71,37 +71,49 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // check if theme already exists
-  const themeAlreadyExists = await prisma.post.findFirst({
-    where: {
-      theme: createTheme,
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  if (themeAlreadyExists) {
-    return new NextResponse(
-      JSON.stringify({
-        status: "error",
-        message: "Tema já existe!",
-        error: "createPost-004",
-      } as ApiReturnError),
-      {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin":
-            process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
-              : "*",
-        },
-      }
-    );
-  }
-
   try {
+    // check if theme already exists
+    const themeAlreadyExists = await prisma.theme.findFirst({
+      where: {
+        name: createTheme,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (themeAlreadyExists) {
+      return new NextResponse(
+        JSON.stringify({
+          status: "error",
+          message: "Tema já existe!",
+          error: "createPost-003",
+        } as ApiReturnError),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin":
+              process.env.VERCEL_ENV === "production"
+                ? "https://something.com"
+                : "*",
+          },
+        }
+      );
+    }
+
+    const themeData = await prisma.theme.findFirst({
+      where: {
+        Posts: {
+          every: {
+            Theme: {
+              name: existedTheme,
+            },
+          },
+        },
+      },
+    });
+
     const professionData = await prisma.profession.findFirst({
       where: {
         name: profession,
@@ -113,7 +125,7 @@ export async function POST(req: NextRequest) {
         JSON.stringify({
           status: "error",
           message: "Profissão não encontrada!",
-          error: "createPost-005",
+          error: "createPost-004",
         } as ApiReturnError),
         {
           status: 404,
@@ -139,7 +151,7 @@ export async function POST(req: NextRequest) {
         JSON.stringify({
           status: "error",
           message: "Autor não encontrado!",
-          error: "createPost-006",
+          error: "createPost-005",
         } as ApiReturnError),
         {
           status: 404,
@@ -154,12 +166,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await prisma.post.create({
+    const postData = await prisma.post.create({
       data: {
         title,
         subtitle,
         content,
-        theme: createTheme,
+        themeId: themeData?.id,
         authorId: authorData.id,
         professionId: professionData.id,
       },
@@ -167,6 +179,21 @@ export async function POST(req: NextRequest) {
         id: true,
       },
     });
+
+    if (!themeData) {
+      console.log("themeData", themeData);
+      console.log("rodou");
+      await prisma.theme.create({
+        data: {
+          name: createTheme.charAt(0).toUpperCase() + createTheme.slice(1),
+          Posts: {
+            connect: {
+              id: postData.id,
+            },
+          },
+        },
+      });
+    }
 
     return new NextResponse(
       JSON.stringify({
@@ -188,7 +215,7 @@ export async function POST(req: NextRequest) {
       JSON.stringify({
         status: "error",
         message: err,
-        error: "createPost-007",
+        error: "createPost-006",
       } as ApiReturnError),
       {
         status: 500,

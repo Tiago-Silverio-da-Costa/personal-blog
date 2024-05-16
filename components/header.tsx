@@ -48,6 +48,7 @@ export default function Header() {
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
   const [posts, setPosts] = useState<TPostsData>();
   const [users, setUsers] = useState<TUsersData>();
+  const [theme, setTheme] = useState<TUsersData>();
 
   const {
     handleSubmit,
@@ -92,7 +93,22 @@ export default function Header() {
     const users = await response.json()
     setUsers(users.data)
   } 
+  
+  const getTheme = async () => {
+    const response = await fetch("/api/getthemedata", {
+      credentials: "include",
+      cache: "no-cache",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+
+    const theme = await response.json()
+    setTheme(theme.data)
+  } 
   useEffect(() => {
+    getTheme()
     getPosts()
     getUsers()
   } , [])
@@ -177,7 +193,7 @@ export default function Header() {
               <form
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="on"
-                className="relative bg-primary grid justify-items-center mx-auto w-5/6 max-w-[40rem] px-12"
+                className="md:overflow-hidden overflow-y-scroll relative bg-primary grid justify-items-center w-full h-full md:mx-auto md:h-[unset] md:w-5/6 max-w-[40rem] px-12"
               >
                 <div
                   onClick={() => SetOpenPopup(!openPopup)}
@@ -196,7 +212,7 @@ export default function Header() {
                     Post criado com sucesso!
                   </Alert>
                 )}
-                <div className="flex items-start justify-between gap-8 mt-6 w-full">
+                <div className="flex flex-col md:flex-row items-start justify-between gap-8 mt-6 w-full">
                   <FormFieldWrapper $error={!!errors.title}>
                     <FormFieldGrp>
                       <input
@@ -236,7 +252,7 @@ export default function Header() {
                         placeholder="Parágrafo"
                         maxLength={10000}
                         readOnly={isSubmitting}
-                        cols={56}
+                        cols={10}
                         rows={8}
                       />
                     </FormFieldGrp>
@@ -246,7 +262,7 @@ export default function Header() {
                   </FormFieldWrapper>
                 </div>
 
-                <div className="flex items-start justify-between gap-8 mt-8 w-full">
+                <div className="flex flex-col md:flex-row items-start justify-between gap-8 mt-8 w-full">
                   <FormFieldWrapper $error={!!errors.existedTheme}>
                     <FormFieldGrp>
                       <select
@@ -256,8 +272,8 @@ export default function Header() {
                         <option disabled value="selecione">
                           Tema
                         </option>
-                        {posts?.map((post) => (
-                          <option key={post.id} value={post.theme}>{post.theme}</option>
+                        {theme?.map((th) => (
+                          <option key={th.id} value={th.name}>{th.name}</option>
                         ))}
                       </select>
                     </FormFieldGrp>
@@ -306,7 +322,7 @@ export default function Header() {
                         {...register("profession")}
                       >
                         <option disabled value="selecione">
-                          Autor
+                          Profissão
                         </option>
                         {users?.map((users) => (
                           <option key={users.id} value={users.profession?.name}>{users.profession?.name}</option>

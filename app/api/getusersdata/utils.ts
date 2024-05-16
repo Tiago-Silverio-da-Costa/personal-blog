@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 
 export type TUsersData = Prisma.PromiseReturnType<typeof getUsersdata>;
 export async function getUsersdata() {
-  const postsPromise = await prisma.user.findMany({
+  const usersPromise = await prisma.user.findMany({
     select: {
       name: true,
       id: true,
@@ -15,6 +15,6 @@ export async function getUsersdata() {
     },
   });
 
-  return postsPromise;
+  return usersPromise;
   
 }

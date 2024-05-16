@@ -1,7 +1,7 @@
 import Image from "next/image";
 import localFont from "next/font/local";
 import prisma from "@/adapter/prisma"
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import ReadingText from "./readingText";
 
 const albra = localFont({
@@ -64,7 +64,7 @@ const satoshi = localFont({
   ],
 })
 
-async function getData({id}: {id: string}) {
+async function getData({ id }: { id: string }) {
 
   const data = await prisma.post.findFirst({
     where: {
@@ -73,51 +73,54 @@ async function getData({id}: {id: string}) {
     select: {
       title: true,
       subtitle: true,
-      theme: true,
       author: true,
       profession: true,
       content: true,
+      Theme: {
+        select: {
+          name: true
+        }
+      }
     }
   })
   return data
 }
 
+async function ArticleHead({ id }: { id: string }) {
+  const postData = await getData({ id })
 
-async function ArticleHead({id}: {id: string}) {
-  const data = await getData({id})
-  
-  if (!data) return
-  if (!data.author) return
-  if (!data.profession) return
-  if (!data.content) return
+  if (!postData) return
+  if (!postData.author) return
+  if (!postData.profession) return
+  if (!postData.content) return
 
   return (
     <div className="flex flex-col border-b-2 border-b-secondary/50 pb-6">
       <div className="flex items-center gap-4">
-        <p className={`${satoshi.className} rounded-lg uppercase border border-secondary px-4 py-2 font-medium text-secondary text-xs tracking-tighter`}>{data.theme}</p>
-        <ReadingText content={data.content} />
+        <p className={`${satoshi.className} rounded-lg uppercase border border-secondary px-4 py-2 font-medium text-secondary text-xs tracking-tighter`}>{postData.Theme?.name}</p>
+        <ReadingText content={postData.content} />
       </div>
 
       <div className="flex flex-col">
         <h1 className={`${albra.className} mt-8 italic pl-1 text-5xl font-medium text-secondary tracking-tighter leading-10 md:leading-6`}>
-          {data.title}
+          {postData.title}
         </h1>
-        <span className={`${satoshi.className} max-w-[40rem] mt-2 text-5xl not-italic font-medium text-secondary tracking-tighter leading-10 md:leading-[3rem]`}>{data.subtitle.charAt(0).toUpperCase() + data.subtitle.slice(1)}</span>
+        <span className={`${satoshi.className} max-w-[40rem] mt-2 text-5xl not-italic font-medium text-secondary tracking-tighter leading-10 md:leading-[3rem]`}>{postData.subtitle.charAt(0).toUpperCase() + postData.subtitle.slice(1)}</span>
       </div>
 
       <div className="flex items-center gap-4 mt-8">
-        <Image className="rounded-full border-2 border-secondary scale-90" src={data.author.profileImage as string} alt="Autor" width={50} height={50} />
+        <Image className="rounded-full border-2 border-secondary scale-90" src={postData.author.profileImage as string} alt="Autor" width={50} height={50} />
         <div className="flex flex-col gap-2">
-          <p className={`${satoshi.className} text-sm text-secondary font-normal tracking-tighter leading-4`}>{data.author.name}</p>
-          <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">{data.profession.name}</p>
+          <p className={`${satoshi.className} text-sm text-secondary font-normal tracking-tighter leading-4`}>{postData.author.name}</p>
+          <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">{postData.profession.name}</p>
         </div>
       </div>
     </div>
   )
 }
 
-async function ArticleBody({id}: {id: string}) {
-  const data = await getData({id})
+async function ArticleBody({ id }: { id: string }) {
+  const data = await getData({ id })
 
   if (!data) return
   if (!data.content) return
@@ -137,7 +140,7 @@ async function ArticleBody({id}: {id: string}) {
   )
 }
 
-export default function Article({id}: {id: string}) {
+export default function Article({ id }: { id: string }) {
 
   return (
     <div className="mx-auto w-5/6 max-w-5xl py-6">
