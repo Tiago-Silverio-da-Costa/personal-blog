@@ -1,13 +1,38 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getPostsdata } from "./utils";
+import { NextResponse } from "next/server";
+import { prisma } from "@/adapter/db";
 
-export async function GET(req: NextRequest) {
-  const posts = await getPostsdata();
+export async function GET() {
+
+  const postsPromise = await prisma.post.findMany({
+    select: {
+      id: true,
+      title: true,
+      subtitle: true,
+      content: true,
+      Theme: {
+        select: {
+          name: true,
+        },
+      },
+      author: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+      profession: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
+  });
   
   return new NextResponse(
     JSON.stringify({
       status: "success",
-      data: posts
+      data: postsPromise
     }),
     {
       status: 200,

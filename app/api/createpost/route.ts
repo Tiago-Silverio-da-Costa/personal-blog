@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (!themeData) {
+    if (createTheme !== "")
       await prisma.theme.create({
         data: {
           name: createTheme.charAt(0).toUpperCase() + createTheme.slice(1),
@@ -191,7 +191,6 @@ export async function POST(req: NextRequest) {
           },
         },
       });
-    }
 
     return new NextResponse(
       JSON.stringify({

@@ -134,7 +134,7 @@ export default function EditPost({ id }: { id: string }) {
       })
     })
 
-    if (responseData.status === 201) {
+    if (responseData.status === 201 || responseData.status === 200) {
       refreshPage()
       reset(
         {

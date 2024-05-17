@@ -46,6 +46,7 @@ export function DeletePost({ id }: { id: string }) {
     })
     if (response.ok) {
       router.push("/")
+      router.refresh()
     }
   }
 
