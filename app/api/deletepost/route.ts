@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/adapter/db";
+import { checkSession } from "../admin/utils";
 
 export async function DELETE(req: NextRequest) {
   if (req.headers.get("content-type") !== "application/json")
@@ -21,6 +22,27 @@ export async function DELETE(req: NextRequest) {
       }
     );
 
+  const session = await checkSession();
+
+  if (!session)
+    return new NextResponse(
+      JSON.stringify({
+        status: "error",
+        message: "Não Autorizado!",
+        error: "deletePost-002",
+      } as ApiReturnError),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":
+            process.env.VERCEL_ENV === "production"
+              ? "https://something.com"
+              : "*",
+        },
+      }
+    );
+
   let {
     postId,
   }: {
@@ -28,12 +50,12 @@ export async function DELETE(req: NextRequest) {
   } = await req.json();
 
   // check if postId is valid
-  if (!postId || !Array.isArray(postId) || postId.length === 0)
+  if (!postId)
     return new NextResponse(
       JSON.stringify({
         status: "error",
         message: "Dados inválidos!",
-        error: "DeletePost-001",
+        error: "DeletePost-003",
       } as ApiReturnError),
       {
         status: 400,
@@ -47,14 +69,54 @@ export async function DELETE(req: NextRequest) {
       }
     );
 
-  const posts = await prisma.post.findMany({
+  const posts = await prisma.post.findFirst({
     where: {
-      id: {
-        in: postId,
-      },
+      id: postId,
     },
     select: {
       id: true,
     },
   });
+
+  if (!posts)
+    return new NextResponse(
+      JSON.stringify({
+        status: "error",
+        message: "Ação não permitida!",
+        error: "DeletePost-002",
+      } as ApiReturnError),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":
+            process.env.VERCEL_ENV === "production"
+              ? "https://something.com"
+              : "*",
+        },
+      }
+    );
+
+  await prisma.post.delete({
+    where: {
+      id: postId,
+    },
+  });
+
+  return new NextResponse(
+    JSON.stringify({
+      status: "success",
+      message: "Post deletado com sucesso!",
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin":
+          process.env.VERCEL_ENV === "production"
+            ? "https://something.com"
+            : "*",
+      },
+    }
+  );
 }

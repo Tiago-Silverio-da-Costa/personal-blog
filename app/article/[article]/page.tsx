@@ -12,7 +12,7 @@ export default async function Page({
 
   return (
     <>
-      <Header />
+      <Header id={id} />
       <Article id={id} />
       <Footer />
     </>
