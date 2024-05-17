@@ -47,8 +47,8 @@ model Post {
   authorId     String?
   profession   Profession? @relation(fields: [professionId], references: [id])
   professionId String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
   Theme        Theme?      @relation(fields: [themeId], references: [id])
   themeId      String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }

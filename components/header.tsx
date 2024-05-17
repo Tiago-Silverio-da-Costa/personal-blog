@@ -32,7 +32,7 @@ const satoshi = localFont({
   ],
 })
 
-export default function Header({ id }: { id: string }) {
+export default function Header({ id }: { id?: string }) {
 
   return (
     <section className="border-b-third border-b">

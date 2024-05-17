@@ -22,7 +22,7 @@ export async function DELETE(req: NextRequest) {
       }
     );
 
-  const session = await checkSession();
+  // const session = await checkSession();
 
   // if (!session)
   //   return new NextResponse(

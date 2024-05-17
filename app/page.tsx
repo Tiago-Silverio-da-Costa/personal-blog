@@ -1,4 +1,4 @@
-import { TPaginationParams, getCustomFilterParams, getPaginationParams } from "@/components/admin/utils";
+import { getCustomFilterParams, getPaginationParams } from "@/components/admin/utils";
 import ArticleItem from "@/components/articleItem";
 import Footer from "@/components/footer";
 import Header from "@/components/header";

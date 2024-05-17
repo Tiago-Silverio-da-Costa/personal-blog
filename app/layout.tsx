@@ -4,7 +4,6 @@ import StyledComponentsRegistry from "@/lib/styledRegistry";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import type { Metadata, Viewport } from "next";
-import { redirect } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -52,11 +51,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
-  const session = await getServerSession(authOptions)
-  // if (!session) {
-  //   return redirect("/login")
-  // }
 
   return (
     <html lang="en">
