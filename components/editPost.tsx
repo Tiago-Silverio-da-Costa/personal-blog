@@ -3,14 +3,13 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa6";
+import { MdEdit } from "react-icons/md";
 import { TCreateBlog, createBlogSchema } from "@/app/api/createpost/utils";
 import { FormBtn, FormFieldError, FormFieldGrp, FormFieldWrapper, Spin } from "@/styles/createBlogForms";
 import { IoMdClose } from "react-icons/io";
 import Alert from "./commom/alert";
 import { PiSpinnerBold } from "react-icons/pi";
 import { TUsersData } from "@/app/api/getusersdata/utils";
-import { TThemeData } from "@/app/api/getthemedata/utils";
 import localFont from "next/font/local";
 
 const satoshi = localFont({
@@ -42,12 +41,10 @@ function refreshPage(){
   window.location.reload();
 } 
 
-export function CreatePost() {
+export default function EditPost({ id }: { id: string }) {
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
   const [users, setUsers] = useState<TUsersData>();
-  const [theme, setTheme] = useState<TThemeData>();
-
-
+  const [theme, setTheme] = useState<TUsersData>();
 
   const {
     handleSubmit,
@@ -55,6 +52,7 @@ export function CreatePost() {
     reset,
     setError,
     register,
+    setValue,
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = useForm<TCreateBlog>({
     resolver: yupResolver(createBlogSchema),
@@ -62,10 +60,30 @@ export function CreatePost() {
     defaultValues: {
       existedTheme: "selecione",
       existedAuthor: "selecione",
-      profession: "selecione"
+      profession: "selecione",
     }
   })
 
+
+  const getPost = async () => {
+    const response = await fetch("/api/getpostdata", {
+      credentials: "include",
+      cache: "no-cache",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+
+    const post = await response.json()
+    post.data.filter((post: any) => post.id === id).map((post: any) => {
+      setValue("title", post.title ?? "")
+      setValue("subtitle", post.subtitle ?? "")
+      setValue("content", post.content ?? "")
+      setValue("existedAuthor", post.author?.name ?? "")
+      setValue("profession", post.profession?.name ?? "")
+    })
+  }
   const getUsers = async () => {
     const response = await fetch("/api/getusersdata", {
       credentials: "include",
@@ -95,21 +113,24 @@ export function CreatePost() {
   }
   useEffect(() => {
     getTheme()
+    getPost()
     getUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const onSubmit = async (data: TCreateBlog) => {
     clearErrors()
 
-    const responseData = await fetch("/api/createpost", {
+    const responseData = await fetch("/api/editpost", {
       credentials: "include",
       cache: "no-cache",
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        ...data
+        ...data,
+        id
       })
     })
 
@@ -156,18 +177,17 @@ export function CreatePost() {
         type: "custom",
         message: "Ocorreu um erro inesperado! Verifique os dados e tente novamente."
       })
-
+  
       window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     }
 
   }
-
   return (
     <>
       <div
         onClick={() => SetOpenPopup(!openPopup)}
         className={`${satoshi.className} transition-all duration-200 hover:opacity-75 cursor-pointer flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl`}
-      ><FaPlus /></div>
+      ><MdEdit /></div>
 
       {openPopup && (
         <div className="flex flex-col items-center justify-center bg-black/50 fixed bottom-0 left-0 top-0 select-none w-screen z-50">
@@ -180,7 +200,7 @@ export function CreatePost() {
               onClick={() => SetOpenPopup(!openPopup)}
               className={`${satoshi.className} absolute top-0 right-0 flex items-center justify-center text-primary bg-secondary px-4 py-2 font-bold text-lg hover:opacity-75 cursor-pointer`}><IoMdClose /></div>
             <div className="bg-primary mx-auto w-full max-w-[40rem] relative flex justify-start gap-4 border-b border-b-secondaryText py-2">
-              <h1 className="uppercase font-light text-sm text-center w-full">Área de criação</h1>
+              <h1 className="uppercase font-light text-sm text-center w-full">Área de Edição</h1>
             </div>
             {Object.keys(errors).length > 0 && (
               <Alert type="error">

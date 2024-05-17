@@ -181,8 +181,6 @@ export async function POST(req: NextRequest) {
     });
 
     if (!themeData) {
-      console.log("themeData", themeData);
-      console.log("rodou");
       await prisma.theme.create({
         data: {
           name: createTheme.charAt(0).toUpperCase() + createTheme.slice(1),

@@ -24,33 +24,33 @@ export async function DELETE(req: NextRequest) {
 
   const session = await checkSession();
 
-  if (!session)
-    return new NextResponse(
-      JSON.stringify({
-        status: "error",
-        message: "Não Autorizado!",
-        error: "deletePost-002",
-      } as ApiReturnError),
-      {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin":
-            process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
-              : "*",
-        },
-      }
-    );
+  // if (!session)
+  //   return new NextResponse(
+  //     JSON.stringify({
+  //       status: "error",
+  //       message: "Não Autorizado!",
+  //       error: "deletePost-002",
+  //     } as ApiReturnError),
+  //     {
+  //       status: 401,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Access-Control-Allow-Origin":
+  //           process.env.VERCEL_ENV === "production"
+  //             ? "https://something.com"
+  //             : "*",
+  //       },
+  //     }
+  //   );
 
   let {
-    postId,
+    id,
   }: {
-    postId: string;
+    id: string;
   } = await req.json();
 
-  // check if postId is valid
-  if (!postId)
+  // check if id is valid
+  if (!id)
     return new NextResponse(
       JSON.stringify({
         status: "error",
@@ -71,7 +71,7 @@ export async function DELETE(req: NextRequest) {
 
   const posts = await prisma.post.findFirst({
     where: {
-      id: postId,
+      id: id,
     },
     select: {
       id: true,
@@ -99,7 +99,7 @@ export async function DELETE(req: NextRequest) {
 
   await prisma.post.delete({
     where: {
-      id: postId,
+      id: id,
     },
   });
 

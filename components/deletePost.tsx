@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa";
 import localFont from "next/font/local";
 
@@ -29,7 +29,7 @@ const satoshi = localFont({
 
 export function DeletePost({ id }: { id: string }) {
 
-  const { push } = useRouter();
+  const router = useRouter();
 
   const deletePost = async () => {
 
@@ -45,7 +45,7 @@ export function DeletePost({ id }: { id: string }) {
       })
     })
     if (response.ok) {
-      push("/")
+      router.push("/")
     }
   }
 
@@ -54,7 +54,7 @@ export function DeletePost({ id }: { id: string }) {
       <div
         onClick={() => deletePost()}
         className={`${satoshi.className} transition-all duration-200 hover:opacity-75 cursor-pointer flex items-center justify-center text-primary bg-secondary px-6 py-2 font-bold text-2xl`}
-      ><FaTrash  /></div>
+      ><FaTrash /></div>
     </>
   )
 }
