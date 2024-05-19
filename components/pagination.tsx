@@ -21,7 +21,7 @@ export default function Pagination({
 
   const pagesCount = Math.ceil(
     valuesCount /
-   (valuesPerPage ?? 10));
+   (valuesPerPage ?? 5));
 
   const startPage =
     pagesCount < 5

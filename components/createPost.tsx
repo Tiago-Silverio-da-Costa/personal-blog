@@ -7,6 +7,7 @@ import { FaPlus } from "react-icons/fa6";
 import { TCreateBlog, createBlogSchema } from "@/app/api/createpost/utils";
 import { FormBtn, FormFieldError, FormFieldGrp, FormFieldWrapper, Spin } from "@/styles/createBlogForms";
 import { IoMdClose } from "react-icons/io";
+import { IoCaretBackOutline } from "react-icons/io5";
 import Alert from "./commom/alert";
 import { PiSpinnerBold } from "react-icons/pi";
 import { TUsersData } from "@/app/api/getusersdata/utils";
@@ -38,12 +39,13 @@ const satoshi = localFont({
   ],
 })
 
-function refreshPage(){
+function refreshPage() {
   window.location.reload();
-} 
+}
 
 export function CreatePost() {
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
+  const [createThemeBtn, SetcreateThemeBtn] = useState<boolean>(false)
   const [users, setUsers] = useState<TUsersData>();
   const [theme, setTheme] = useState<TThemeData>();
 
@@ -244,38 +246,53 @@ export function CreatePost() {
             </div>
 
             <div className="flex flex-col md:flex-row items-start justify-between gap-8 mt-8 w-full">
-              <FormFieldWrapper $error={!!errors.existedTheme}>
-                <FormFieldGrp>
-                  <select
-                    disabled={isSubmitting}
-                    {...register("existedTheme")}
-                  >
-                    <option disabled value="selecione">
-                      Tema
-                    </option>
-                    {theme?.map((th) => (
-                      <option key={th.id} value={th.name}>{th.name}</option>
-                    ))}
-                  </select>
-                </FormFieldGrp>
-                {errors.existedTheme && (
-                  <FormFieldError>{errors.existedTheme.message}</FormFieldError>
+              <div className="flex items-start justify-between w-full">
+                {!createThemeBtn && (
+                  <FormFieldWrapper $error={!!errors.existedTheme}>
+                    <FormFieldGrp>
+                      <select
+                        disabled={isSubmitting}
+                        {...register("existedTheme")}
+                      >
+                        <option disabled value="selecione">
+                          Tema
+                        </option>
+                        {theme?.map((th) => (
+                          <option key={th.id} value={th.name}>{th.name}</option>
+                        ))}
+                      </select>
+                    </FormFieldGrp>
+                    {errors.existedTheme && (
+                      <FormFieldError>{errors.existedTheme.message}</FormFieldError>
+                    )}
+                  </FormFieldWrapper>
                 )}
-              </FormFieldWrapper>
-              <FormFieldWrapper $error={!!errors.createTheme}>
-                <FormFieldGrp>
-                  <input
-                    {...register("createTheme")}
-                    inputMode="text"
-                    placeholder="Criar Tema"
-                    maxLength={100}
-                    readOnly={isSubmitting}
-                  />
-                </FormFieldGrp>
-                {errors.createTheme && (
-                  <FormFieldError>{errors.createTheme.message}</FormFieldError>
+
+                {createThemeBtn && (
+                  <FormFieldWrapper $error={!!errors.createTheme}>
+                    <FormFieldGrp>
+                      <input
+                        {...register("createTheme")}
+                        inputMode="text"
+                        placeholder="Criar Tema"
+                        maxLength={100}
+                        readOnly={isSubmitting}
+                      />
+                    </FormFieldGrp>
+                    {errors.createTheme && (
+                      <FormFieldError>{errors.createTheme.message}</FormFieldError>
+                    )}
+                  </FormFieldWrapper>
                 )}
-              </FormFieldWrapper>
+                <div
+                  onClick={() => SetcreateThemeBtn(!createThemeBtn)}
+                  className={`${satoshi.className} transition-all duration-200 hover:opacity-75 cursor-pointer flex items-center justify-center text-primary bg-secondary px-2 py-[0.65rem] font-bold text-2xl`}
+                >
+                  {!createThemeBtn ? <FaPlus /> : <IoCaretBackOutline />}
+                </div>
+              </div>
+
+
 
               <FormFieldWrapper $error={!!errors.existedAuthor}>
                 <FormFieldGrp>

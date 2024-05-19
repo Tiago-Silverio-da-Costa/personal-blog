@@ -62,7 +62,7 @@ export function getQuery({
   }
 
   // perPageQuery
-  var take = paginationParams.perPage ? paginationParams.perPage : 10;
+  var take = 5;
 
   // pageQuery
   var skip = paginationParams.page ? (paginationParams.page - 1) * take : 0;

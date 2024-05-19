@@ -67,7 +67,7 @@ export function getQueryParams(
   return Object.entries({ ...search, ...params }).reduce(
     (acc, [key, value]) => {
       if (value) {
-        // if (key == "status" && value == "selecione") return acc;
+        if (key == "status" && value == "selecione") return acc;
         if (key == "page" && value == "1") return acc;
 
         return { ...acc, [key]: value.toString() };

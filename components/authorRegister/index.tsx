@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TAuthorRegister, authorRegisterSchema } from "@/app/api/register/utils";
-
+import { signIn } from "next-auth/react";
 
 export default function AuthorRegister() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -37,53 +37,17 @@ export default function AuthorRegister() {
       body: JSON.stringify(data),
     })
 
-    if (responseData.status == 201) {
-      reset(
-        {
-          name: "",
-          email: "",
-          profession: "",
-          password: "",
-          confirmPassword: "",
-        },
-        {
-          keepIsSubmitted: true,
-        }
-      )
-      setTimeout(() => {
-        router.push("/");
-      }, 3000);
-      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-    } else if (responseData.status == 400 || responseData.status == 403) {
-      const response: {
-        fields?: (keyof TAuthorRegister)[];
-      } & ApiReturnError = await responseData.json();
+    // token 
 
-      if (response.status == "error") {
-        if (response.message)
-          setError("root", {
-            type: "custom",
-            message: response.message,
-          });
 
-        if (response.fields)
-          response.fields.forEach((field) => {
-            setError(field, {
-              type: "custom",
-              message: "Verifique o campo!",
-            });
-          });
-        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-        return;
-      }
-      setError("root", {
-        type: "custom",
-        message: "Ocoreu um erro inesperado! Verifique os dados e tente novamente."
-      })
-
-      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    const loginResponse = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      // loginToken: token,
+      redirect: false,
+    });
     }
-  };
+
 
   return (
     <div className="flex items-center justify-center py-8">
