@@ -49,8 +49,6 @@ export function CreatePost() {
   const [users, setUsers] = useState<TUsersData>();
   const [theme, setTheme] = useState<TThemeData>();
 
-
-
   const {
     handleSubmit,
     clearErrors,
@@ -232,7 +230,7 @@ export function CreatePost() {
                   <textarea
                     {...register("content")}
                     inputMode="text"
-                    placeholder="Parágrafo"
+                    placeholder="Artigo"
                     maxLength={10000}
                     readOnly={isSubmitting}
                     cols={10}
@@ -291,8 +289,6 @@ export function CreatePost() {
                   {!createThemeBtn ? <FaPlus /> : <IoCaretBackOutline />}
                 </div>
               </div>
-
-
 
               <FormFieldWrapper $error={!!errors.existedAuthor}>
                 <FormFieldGrp>

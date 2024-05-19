@@ -10,6 +10,8 @@ import { IoMdClose } from "react-icons/io";
 import Alert from "./commom/alert";
 import { PiSpinnerBold } from "react-icons/pi";
 import { TUsersData } from "@/app/api/getusersdata/utils";
+import { FaPlus } from "react-icons/fa6";
+import { IoCaretBackOutline } from "react-icons/io5";
 import localFont from "next/font/local";
 
 const satoshi = localFont({
@@ -37,12 +39,13 @@ const satoshi = localFont({
   ],
 })
 
-function refreshPage(){
+function refreshPage() {
   window.location.reload();
-} 
+}
 
 export default function EditPost({ id }: { id: string }) {
   const [openPopup, SetOpenPopup] = useState<boolean>(false)
+  const [createThemeBtn, SetcreateThemeBtn] = useState<boolean>(false)
   const [users, setUsers] = useState<TUsersData>();
   const [theme, setTheme] = useState<TUsersData>();
 
@@ -177,7 +180,7 @@ export default function EditPost({ id }: { id: string }) {
         type: "custom",
         message: "Ocorreu um erro inesperado! Verifique os dados e tente novamente."
       })
-  
+
       window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     }
 
@@ -250,7 +253,7 @@ export default function EditPost({ id }: { id: string }) {
                   <textarea
                     {...register("content")}
                     inputMode="text"
-                    placeholder="Parágrafo"
+                    placeholder="Artigo"
                     maxLength={10000}
                     readOnly={isSubmitting}
                     cols={10}
@@ -264,38 +267,51 @@ export default function EditPost({ id }: { id: string }) {
             </div>
 
             <div className="flex flex-col md:flex-row items-start justify-between gap-8 mt-8 w-full">
-              <FormFieldWrapper $error={!!errors.existedTheme}>
-                <FormFieldGrp>
-                  <select
-                    disabled={isSubmitting}
-                    {...register("existedTheme")}
-                  >
-                    <option disabled value="selecione">
-                      Tema
-                    </option>
-                    {theme?.map((th) => (
-                      <option key={th.id} value={th.name}>{th.name}</option>
-                    ))}
-                  </select>
-                </FormFieldGrp>
-                {errors.existedTheme && (
-                  <FormFieldError>{errors.existedTheme.message}</FormFieldError>
+              <div className="flex items-start justify-between w-full">
+                {!createThemeBtn && (
+                  <FormFieldWrapper $error={!!errors.existedTheme}>
+                    <FormFieldGrp>
+                      <select
+                        disabled={isSubmitting}
+                        {...register("existedTheme")}
+                      >
+                        <option disabled value="selecione">
+                          Tema
+                        </option>
+                        {theme?.map((th) => (
+                          <option key={th.id} value={th.name}>{th.name}</option>
+                        ))}
+                      </select>
+                    </FormFieldGrp>
+                    {errors.existedTheme && (
+                      <FormFieldError>{errors.existedTheme.message}</FormFieldError>
+                    )}
+                  </FormFieldWrapper>
                 )}
-              </FormFieldWrapper>
-              <FormFieldWrapper $error={!!errors.createTheme}>
-                <FormFieldGrp>
-                  <input
-                    {...register("createTheme")}
-                    inputMode="text"
-                    placeholder="Criar Tema"
-                    maxLength={100}
-                    readOnly={isSubmitting}
-                  />
-                </FormFieldGrp>
-                {errors.createTheme && (
-                  <FormFieldError>{errors.createTheme.message}</FormFieldError>
+
+                {createThemeBtn && (
+                  <FormFieldWrapper $error={!!errors.createTheme}>
+                    <FormFieldGrp>
+                      <input
+                        {...register("createTheme")}
+                        inputMode="text"
+                        placeholder="Criar Tema"
+                        maxLength={100}
+                        readOnly={isSubmitting}
+                      />
+                    </FormFieldGrp>
+                    {errors.createTheme && (
+                      <FormFieldError>{errors.createTheme.message}</FormFieldError>
+                    )}
+                  </FormFieldWrapper>
                 )}
-              </FormFieldWrapper>
+                <div
+                  onClick={() => SetcreateThemeBtn(!createThemeBtn)}
+                  className={`${satoshi.className} transition-all duration-200 hover:opacity-75 cursor-pointer flex items-center justify-center text-primary bg-secondary px-2 py-[0.65rem] font-bold text-2xl`}
+                >
+                  {!createThemeBtn ? <FaPlus /> : <IoCaretBackOutline />}
+                </div>
+              </div>
 
               <FormFieldWrapper $error={!!errors.existedAuthor}>
                 <FormFieldGrp>
