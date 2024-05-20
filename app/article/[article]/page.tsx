@@ -7,7 +7,6 @@ export default async function Page({
 }: {
 	params: { article: string };
 }) {
-
   const id = article
 
   return (

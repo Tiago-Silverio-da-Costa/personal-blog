@@ -1,38 +1,14 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/adapter/db";
+import { getPostData } from "./utils";
 
 export async function GET() {
 
-  const postsPromise = await prisma.post.findMany({
-    select: {
-      id: true,
-      title: true,
-      subtitle: true,
-      content: true,
-      Theme: {
-        select: {
-          name: true,
-        },
-      },
-      author: {
-        select: {
-          name: true,
-          id: true,
-        },
-      },
-      profession: {
-        select: {
-          name: true,
-          id: true,
-        },
-      },
-    },
-  });
-  
+  const users = await getPostData();
+
   return new NextResponse(
     JSON.stringify({
       status: "success",
-      data: postsPromise
+      data: users,
     }),
     {
       status: 200,
@@ -42,7 +18,7 @@ export async function GET() {
           process.env.VERCEL_ENV === "production"
             ? "https://something.com"
             : "*",
-      }
+      },
     }
-  )
+  );
 }

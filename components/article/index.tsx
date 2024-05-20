@@ -1,8 +1,8 @@
 import Image from "next/image";
 import localFont from "next/font/local";
 import prisma from "@/adapter/prisma"
-import { Fragment } from "react";
 import ReadingText from "./readingText";
+import Paragraph from "./paragraph";
 
 const albra = localFont({
   src: [
@@ -127,15 +127,7 @@ async function ArticleBody({ id }: { id: string }) {
 
   return (
     <div className="mx-auto w-5/6 max-w-3xl mt-16">
-      <p className="text-lg tracking-tighter leading-6">
-        {data.content.split("  ").map((paragraph, index) => (
-          <Fragment key={index}>
-            {paragraph}
-            <br />
-            <br />
-          </Fragment>
-        ))}
-      </p>
+        <Paragraph content={data.content} />
     </div>
   )
 }
