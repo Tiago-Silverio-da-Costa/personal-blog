@@ -2,9 +2,9 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
-import { TAuthorRegister, authorRegisterSchema } from "@/app/api/register/utils";
+import { TAuthorRegister, authorRegisterSchema } from "@/app/api/login/utils";
 import { signIn } from "next-auth/react";
-import Alert from "../commom/alert";
+import Alert from "@/components/commom/alert";
 import { useSearchParams } from "next/navigation";
 
 export default function AuthorRegister() {
