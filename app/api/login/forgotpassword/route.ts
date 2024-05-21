@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/adapter/db";
-import { GRecaptchaResponseProps } from "../utils";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/authOptions";
+import { TForgotPassword } from "./utils";
 import axios from "axios";
+import { GRecaptchaResponseProps } from "../../utils";
+import { prisma } from "@/adapter/db";
+import isEmail from "validator/lib/isEmail";
+import { generateForgotPasswordToken } from "../utils";
 
-export async function DELETE(req: NextRequest) {
+export async function POST(req: NextRequest) {
   if (req.headers.get("content-type") !== "application/json")
     return new NextResponse(
       JSON.stringify({
         status: "error",
         message: "Formato inválido!",
-        error: "deletePost-001",
+        error: "ForgotPassword-001",
       } as ApiReturnError),
       {
         status: 400,
@@ -25,34 +26,9 @@ export async function DELETE(req: NextRequest) {
       }
     );
 
-  const session = await getServerSession(authOptions);
-  if (!session)
-    return new NextResponse(
-      JSON.stringify({
-        status: "error",
-        message: "Não Autorizado!",
-      } as ApiReturnError),
-      {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin":
-            process.env.VERCEL_ENV === "production"
-              ? "https://personal-blog-cmsn.vercel.app/"
-              : "*",
-        },
-      }
-    );
-
   const accessIp = req.headers.get("cf-connecting-ip");
 
-  let {
-    id,
-    gRecaptchaToken,
-  }: {
-    id: string;
-    gRecaptchaToken: string;
-  } = await req.json();
+  let { gRecaptchaToken, email }: TForgotPassword = await req.json();
 
   // check token
   if (!gRecaptchaToken)
@@ -60,7 +36,7 @@ export async function DELETE(req: NextRequest) {
       JSON.stringify({
         status: "error",
         message: "Captcha não encontrado!",
-        error: "DeletePost-002",
+        error: "ForgotPassword-002",
       } as ApiReturnError),
       {
         status: 400,
@@ -81,21 +57,16 @@ export async function DELETE(req: NextRequest) {
         event: {
           token: gRecaptchaToken,
           siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_KEY,
-          expectedAction: "deletepost",
+          expectedAction: "forgotpassword",
         },
       }
     );
     const gRecaptchaData = data as GRecaptchaResponseProps;
     const { score, ...riskAnalysis } = gRecaptchaData.riskAnalysis;
 
-    await prisma.adminAuditRecaptcha.create({
+    var gRecaptcha = await prisma.adminAuditRecaptcha.create({
       data: {
-        // User: {
-        //   connect: {
-        //     uuid: session.user.id
-        //   }
-        // },
-        action: "deletepost",
+        action: "forgotpassword",
         valid: gRecaptchaData.tokenProperties.valid,
         invalidReason: gRecaptchaData.tokenProperties.invalidReason,
         expectedAction: gRecaptchaData.event.expectedAction,
@@ -110,14 +81,14 @@ export async function DELETE(req: NextRequest) {
 
     if (
       !gRecaptchaData.tokenProperties.valid ||
-      gRecaptchaData.event.expectedAction !== "deletepost" ||
+      gRecaptchaData.event.expectedAction !== "forgotpassword" ||
       score < 0.5
     )
       return new NextResponse(
         JSON.stringify({
           status: "error",
           message: "Ação não autorizada!",
-          error: "DeletePost-003",
+          error: "ForgotPassword-003",
         } as ApiReturnError),
         {
           status: 403,
@@ -135,7 +106,7 @@ export async function DELETE(req: NextRequest) {
       JSON.stringify({
         status: "error",
         message: "Captcha inválido!",
-        error: "DeletePost-004",
+        error: "ForgotPassword-004",
       } as ApiReturnError),
       {
         status: 400,
@@ -150,14 +121,22 @@ export async function DELETE(req: NextRequest) {
     );
   }
 
-  // check if id is valid
-  if (!id)
+  email = email?.trim().toLocaleLowerCase().substring(0, 60);
+
+  // check if data is valid
+  if (!email || !isEmail(email)) {
+    let fields = [];
+    fields.push("email");
+
     return new NextResponse(
       JSON.stringify({
         status: "error",
         message: "Dados inválidos!",
-        error: "DeletePost-005",
-      } as ApiReturnError),
+        fields: fields,
+        error: "ForgotPassword-005",
+      } as {
+        fields: (keyof TForgotPassword)[];
+      } & ApiReturnError),
       {
         status: 400,
         headers: {
@@ -169,53 +148,89 @@ export async function DELETE(req: NextRequest) {
         },
       }
     );
+  }
 
-  const posts = await prisma.post.findFirst({
+  //get user
+  const user = await prisma.user.findFirst({
     where: {
-      id: id,
+      email,
     },
     select: {
-      id: true,
+      uuid: true,
+      name: true,
+      email: true,
     },
   });
 
-  if (!posts)
+  //return false success to prevent email discovery
+  if (!user)
+    return new NextResponse(
+      JSON.stringify({
+        status: "success",
+      } as ApiReturnSuccess),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":
+            process.env.VERCEL_ENV === "production"
+              ? "https://personal-blog-cmsn.vercel.app/"
+              : "*",
+        },
+      }
+    );
+
+  // update recaptcha with user
+  await prisma.adminAuditRecaptcha.update({
+    where: {
+      id: gRecaptcha.id,
+    },
+    data: {
+      User: {
+        connect: {
+          uuid: user.uuid,
+        },
+      },
+    },
+  });
+
+  // generate token
+  const token = await generateForgotPasswordToken(user.uuid);
+
+  if (!token)
     return new NextResponse(
       JSON.stringify({
         status: "error",
-        message: "Ação não permitida!",
-        error: "DeletePost-007",
+        message:
+          "Erro ao enviar e-mail de recuperação! Atualize a página e tente novamente.",
+        error: "ForgotPassword-006",
       } as ApiReturnError),
       {
-        status: 400,
+        status: 500,
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin":
             process.env.VERCEL_ENV === "production"
-              ? "https://personal-blog-cmsn.vercel.app/"
+              ? "https://partidomissao.com"
               : "*",
         },
       }
     );
 
-  await prisma.post.delete({
-    where: {
-      id: id,
-    },
-  });
+  // send email
+  //
 
   return new NextResponse(
     JSON.stringify({
       status: "success",
-      message: "Post deletado com sucesso!",
-    }),
+    } as ApiReturnSuccess),
     {
       status: 200,
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin":
           process.env.VERCEL_ENV === "production"
-            ? "https://personal-blog-cmsn.vercel.app/"
+            ? "https://partidomissao.com"
             : "*",
       },
     }

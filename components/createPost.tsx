@@ -66,6 +66,8 @@ export function CreatePost() {
     }
   })
 
+  
+
   const getUsers = async () => {
     const response = await fetch("/api/getusersdata", {
       credentials: "include",
@@ -101,6 +103,11 @@ export function CreatePost() {
   const onSubmit = async (data: TCreateBlog) => {
     clearErrors()
 
+    const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
+			process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
+			{ action: "createpost" }
+		);
+
     const responseData = await fetch("/api/createpost", {
       credentials: "include",
       cache: "no-cache",
@@ -109,7 +116,8 @@ export function CreatePost() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        ...data
+        ...data,
+        gRecaptchaToken
       })
     })
 

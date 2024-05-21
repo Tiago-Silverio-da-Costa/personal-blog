@@ -1,4 +1,4 @@
-import AuthorRegister from "@/components/authorRegister";
+import AuthorRegister from "@/components/login/register/index";
 import Footer from "@/components/footer";
 import { Metadata } from "next";
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     siteName: "Blog",
     images: [
       {
-        url: "https://something.com/missao-banner.jpg",
+        url: "https://personal-blog-cmsn.vercel.app//missao-banner.jpg",
         width: 1280,
         height: 720,
       },

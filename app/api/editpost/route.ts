@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/adapter/db";
 import { TCreateBlog } from "../createpost/utils";
+import axios from "axios";
+import { GRecaptchaResponseProps } from "../utils";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/authOptions";
 
 export async function PUT(req: NextRequest) {
   if (req.headers.get("content-type") !== "application/json")
@@ -8,7 +12,7 @@ export async function PUT(req: NextRequest) {
       JSON.stringify({
         status: "error",
         message: "Formato inválido!",
-        error: "editPost-001",
+        error: "EditPost-001",
       } as ApiReturnError),
       {
         status: 400,
@@ -16,11 +20,32 @@ export async function PUT(req: NextRequest) {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin":
             process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
+              ? "https://personal-blog-cmsn.vercel.app/"
               : "*",
         },
       }
     );
+
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return new NextResponse(
+      JSON.stringify({
+        status: "error",
+        message: "Não Autorizado!",
+      } as ApiReturnError),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":
+            process.env.VERCEL_ENV === "production"
+              ? "https://personal-blog-cmsn.vercel.app/"
+              : "*",
+        },
+      }
+    );
+
+  const accessIp = req.headers.get("cf-connecting-ip");
 
   let {
     id,
@@ -31,9 +56,106 @@ export async function PUT(req: NextRequest) {
     profession,
     createTheme,
     existedTheme,
+    gRecaptchaToken,
   }: {
     id: string;
   } & TCreateBlog = await req.json();
+
+  // check token
+  if (!gRecaptchaToken)
+    return new NextResponse(
+      JSON.stringify({
+        status: "error",
+        message: "Captcha não encontrado!",
+        error: "EditPost-002",
+      } as ApiReturnError),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Acces-Control-Allow-Origin":
+            process.env.VERCEL_ENV === "production"
+              ? "https://personal-blog-cmsn.vercel.app/"
+              : "*",
+        },
+      }
+    );
+
+  try {
+    const { data } = await axios.post(
+      `https://recaptchaenterprise.googleapis.com/v1/projects/${process.env.RECAPTCHA_PROJECT_ID}/assessments?key=${process.env.RECAPTCHA_API_KEY}`,
+      {
+        event: {
+          token: gRecaptchaToken,
+          siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_KEY,
+          expectedAction: "editpost",
+        },
+      }
+    );
+    const gRecaptchaData = data as GRecaptchaResponseProps;
+    const { score, ...riskAnalysis } = gRecaptchaData.riskAnalysis;
+
+    await prisma.adminAuditRecaptcha.create({
+      data: {
+        // User: {
+        //   connect: {
+        //     uuid: session.user.id
+        //   }
+        // },
+        action: "editpost",
+        valid: gRecaptchaData.tokenProperties.valid,
+        invalidReason: gRecaptchaData.tokenProperties.invalidReason,
+        expectedAction: gRecaptchaData.event.expectedAction,
+        score,
+        riskAnalysis,
+        ip: accessIp,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (
+      !gRecaptchaData.tokenProperties.valid ||
+      gRecaptchaData.event.expectedAction !== "editpost" ||
+      score < 0.5
+    )
+      return new NextResponse(
+        JSON.stringify({
+          status: "error",
+          message: "Ação não autorizada!",
+          error: "EditPost-003",
+        } as ApiReturnError),
+        {
+          status: 403,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin":
+              process.env.VERCEL_ENV === "production"
+                ? "https://personal-blog-cmsn.vercel.app/"
+                : "*",
+          },
+        }
+      );
+  } catch (err) {
+    return new NextResponse(
+      JSON.stringify({
+        status: "error",
+        message: "Captcha inválido!",
+        error: "EditPost-004",
+      } as ApiReturnError),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":
+            process.env.VERCEL_ENV === "production"
+              ? "https://personal-blog-cmsn.vercel.app/"
+              : "*",
+        },
+      }
+    );
+  }
 
   // validate post info
   if (!id || !title || !subtitle || !content || !existedAuthor || !profession) {
@@ -51,7 +173,7 @@ export async function PUT(req: NextRequest) {
       JSON.stringify({
         status: "error",
         message: "Dados inválidos!",
-        error: "editPost-002",
+        error: "editPost-005",
       } as ApiReturnError),
       {
         status: 400,
@@ -59,7 +181,7 @@ export async function PUT(req: NextRequest) {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin":
             process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
+              ? "https://personal-blog-cmsn.vercel.app/"
               : "*",
         },
       }
@@ -82,7 +204,7 @@ export async function PUT(req: NextRequest) {
         JSON.stringify({
           status: "error",
           message: "Tema já existe!",
-          error: "editPost-003",
+          error: "editPost-006",
         } as ApiReturnError),
         {
           status: 400,
@@ -90,7 +212,7 @@ export async function PUT(req: NextRequest) {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin":
               process.env.VERCEL_ENV === "production"
-                ? "https://something.com"
+                ? "https://personal-blog-cmsn.vercel.app/"
                 : "*",
           },
         }
@@ -101,7 +223,7 @@ export async function PUT(req: NextRequest) {
       JSON.stringify({
         status: "error",
         message: "Erro ao verificar se o tema já existe!",
-        error: "editPost-004",
+        error: "editPost-007",
       } as ApiReturnError),
       {
         status: 400,
@@ -109,7 +231,7 @@ export async function PUT(req: NextRequest) {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin":
             process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
+              ? "https://personal-blog-cmsn.vercel.app/"
               : "*",
         },
       }
@@ -138,7 +260,7 @@ export async function PUT(req: NextRequest) {
         update: {
           name: existedAuthor,
         },
-      }
+      },
     },
   });
 
@@ -153,7 +275,7 @@ export async function PUT(req: NextRequest) {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin":
           process.env.VERCEL_ENV === "production"
-            ? "https://something.com"
+            ? "https://personal-blog-cmsn.vercel.app/"
             : "*",
       },
     }

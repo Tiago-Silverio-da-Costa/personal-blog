@@ -14,15 +14,34 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL") // Only needed when using a cloud provider that doesn't support the creation of new databases, like Heroku. Learn more: https://pris.ly/d/migrate-shadow
 }
 
+model AdminAuditRecaptcha {
+  id Int @id @default(autoincrement())
+
+  action         String
+  valid          Boolean
+  invalidReason  String
+  expectedAction String?
+  score          Float?
+  riskAnalysis   Json?
+
+  ip        String?
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
 model User {
-  id           String      @id @default(uuid())
-  email        String?     @unique
-  name         String
-  profileImage String?
-  password     String?
-  Posts        Post[]
-  profession   Profession? @relation(fields: [professionId], references: [id])
-  professionId String?
+  id   String @id @default(uuid())
+  uuid String @unique @default(dbgenerated("gen_random_uuid()"))
+
+  email          String                @unique
+  name           String
+  profileImage   String?
+  password       String?
+  Posts          Post[]
+  profession     Profession?           @relation(fields: [professionId], references: [id])
+  auditRecaptcha AdminAuditRecaptcha[]
+  professionId   String?
 }
 
 model Profession {

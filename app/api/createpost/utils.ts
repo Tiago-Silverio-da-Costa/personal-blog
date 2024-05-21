@@ -3,6 +3,7 @@ import { prisma } from "@/adapter/db";
 
 export const createBlogSchema = yup
   .object({
+    gRecaptchaToken: yup.string(),
     title: yup.string().trim().required("Campo obrigatório"),
     subtitle: yup.string().trim().required("Campo obrigatório"),
     existedAuthor: yup

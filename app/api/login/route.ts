@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
           Content_Type: "application/json",
           "Access-Control-Allow-Origin":
             process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
+              ? "https://personal-blog-cmsn.vercel.app/"
               : "*",
         },
       }
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin":
             process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
+              ? "https://personal-blog-cmsn.vercel.app/"
               : "*",
         },
       }
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin":
             process.env.VERCEL_ENV === "production"
-              ? "https://something.com"
+              ? "https://personal-blog-cmsn.vercel.app/"
               : "*",
         },
       }
@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin":
           process.env.VERCEL_ENV === "production"
-            ? "https://something.com"
+            ? "https://personal-blog-cmsn.vercel.app/"
             : "*",
       },
     }

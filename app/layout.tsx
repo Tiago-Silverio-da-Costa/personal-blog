@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import StyledComponentsRegistry from "@/lib/styledRegistry";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import AuthSessionProvider from "@/lib/authSessionRegistry";
 import type { Metadata, Viewport } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -47,16 +47,20 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
 
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
-      </body>
-    </html >
-  );
+	return (
+		<html lang="en">
+			<body className={inter.className}>
+				<StyledComponentsRegistry>
+					<AuthSessionProvider>
+						{children}
+					</AuthSessionProvider>
+				</StyledComponentsRegistry>
+			</body>
+		</html >
+	);
 }

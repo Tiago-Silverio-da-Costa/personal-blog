@@ -2,15 +2,15 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { TAuthorRegister, authorRegisterSchema } from "@/app/api/register/utils";
 import { signIn } from "next-auth/react";
+import Alert from "../commom/alert";
+import { useSearchParams } from "next/navigation";
 
 export default function AuthorRegister() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-  const router = useRouter();
-
+  const errorParam = useSearchParams()?.get("error")
   const {
     register,
     handleSubmit,
@@ -24,35 +24,79 @@ export default function AuthorRegister() {
   });
 
   const formSubmit = async (data: TAuthorRegister) => {
-    if (isSubmitting) return;
+    if (isSubmitting || isSubmitSuccessful) return;
     clearErrors();
 
-    const responseData = await fetch("/api/register", {
-      credentials: "include",
-      cache: "no-cache",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
+    // const responseData = await fetch("/api/register", {
+    //   credentials: "include",
+    //   cache: "no-cache",
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(data),
+    // })
 
     // token 
 
+    const token = await window.grecaptcha.enterprise.execute(
+			process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
+			{ action: "login" }
+		);
 
     const loginResponse = await signIn("credentials", {
       email: data.email,
       password: data.password,
-      // loginToken: token,
+      loginToken: token,
       redirect: false,
     });
+
+    if (loginResponse?.status === 200) {
+      reset(
+        {
+          email: "",
+          password: "",
+        },
+        {
+          keepValues: false,
+          keepIsSubmitted: true,
+        }
+      );
+      return;
     }
+    setError("root", {
+      type: "manual",
+      message: loginResponse?.error ?? "Erro ao processar login!",
+    })
+  }
 
 
   return (
-    <div className="flex items-center justify-center py-8">
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit(formSubmit)}>
-        <h1 className="text-2xl font-bold">Cadastre-se como autor</h1>
+    <div className="flex flex-col items-center justify-center py-8">
+      {isSubmitSuccessful && (
+        <div className="mb-2">
+          <Alert type="success">Login realizado! Redirecionando...</Alert>
+        </div>
+      )}
+      {!isSubmitSuccessful &&
+        (errorParam || Object.keys(errors).length > 0) && (
+          <div className="mb-2">
+            <Alert type="error">
+              {Object.keys(errors).length > 0 && !errors.root
+                ? "Corrija os campos abaixo!"
+                : errors.root?.message == "CredentialsSignin" ||
+                  errorParam == "CredentialsSignin"
+                  ? "Usuário ou senha inválidos!"
+                  : errors.root?.message == "AccessDenied" ||
+                    errorParam == "AccessDenied"
+                    ? "Acesso não autorizado!"
+                    : "Erro ao processar login!"}
+            </Alert>
+          </div>
+        )}
+      <h1 className="text-2xl font-bold text-white">Cadastre-se como autor</h1>
+      <form className="flex flex-col gap-4 text-black" onSubmit={handleSubmit(formSubmit)}>
+
         <input
           type="text"
           placeholder="Nome"
@@ -114,7 +158,15 @@ export default function AuthorRegister() {
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Enviando..." : "Enviar"}
         </button>
-      </form>
-    </div>
+      </form >
+      {/* providers */}
+      <button
+        className="text-white"
+        type="submit"
+        onClick={() => !isSubmitting && !isSubmitSuccessful && signIn("github")}
+      >Signin with GitHub
+      </button>
+
+    </div >
   )
 }

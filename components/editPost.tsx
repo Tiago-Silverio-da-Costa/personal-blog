@@ -124,6 +124,11 @@ export default function EditPost({ id }: { id: string }) {
   const onSubmit = async (data: TCreateBlog) => {
     clearErrors()
 
+    const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
+      process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
+      { action: "editpost" }
+    );
+
     const responseData = await fetch("/api/editpost", {
       credentials: "include",
       cache: "no-cache",
@@ -133,7 +138,8 @@ export default function EditPost({ id }: { id: string }) {
       },
       body: JSON.stringify({
         ...data,
-        id
+        id,
+        gRecaptchaToken
       })
     })
 
