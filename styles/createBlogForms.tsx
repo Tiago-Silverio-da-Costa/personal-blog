@@ -128,3 +128,43 @@ export const FormFieldWrapper = styled.div<{
     }
   `}
 `;
+
+export const LoginBtn = styled.button<{
+  $isSubmitting?: boolean;
+}>`
+  background-color: var(--secondary);
+  font-size: 0.9375rem;
+  color: var(--primary);
+  line-height: 1;
+  padding: 0.875rem 1rem;
+  position: relative;
+  transition: all 0.2s;
+  width: 100%;
+
+  & span {
+    transition: all 0.1s;
+  }
+
+  &:disabled {
+    background-color: rgba(45, 164, 74, 0.8);
+  }
+
+  ${({ $isSubmitting }) =>
+    $isSubmitting
+      ? `
+			cursor: default;
+			& span {
+				opacity: 0;
+			}`
+      : `
+		&:hover {
+			opacity: 0.75;
+		}`}
+
+  &>div {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+`;
