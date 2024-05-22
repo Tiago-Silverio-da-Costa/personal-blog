@@ -66,67 +66,61 @@ export const FormFieldError = styled.div`
 	width: 100%;
 `;
 
-export const FormFieldGrp = styled.div`
+export const FormFieldGrp = styled.div<{
+  $password?: boolean;
+}>`
+  color: #ddd;
   display: flex;
-  flex-flow: column;
-  position: relative;
+  padding: 0.75rem;
   transition: all 0.2s;
+
+  ${({ $password }) =>
+    $password &&
+    `
+    & input,
+    & input:focus,
+    & input:focus-visible {
+      letter-spacing: .01rem;
+    }
+`}
 `;
 
 export const FormFieldWrapper = styled.div<{
   $error?: boolean
 }>`
-  width: 100%;
+width: 100%;
+margin: 1rem 0;
+border: 0.5px solid var(--secondary);
 
-  &:first-child {
-    margin-top: 0;
-  }
-
- option {
-  color: var(--primary);
+& input,
+& input:focus,
+& input:focus-visible {
+  color: var(--secondary);
+  background: transparent;
+   border: none;
+   font-size: 0.875rem;
+   letter-spacing: 0.01em;
+   line-height: 1.5;
+   outline: none;
+   width: 100%;
  }
 
-  & input,
-  & input:focus,
-  & input:focus-visible,
-  & textarea,
-  & textarea:focus,
-  & textarea:focus-visible,
-  & select,
-  & select:focus,
-  & select:focus-visible {
-    appearance: none;
-    background-color: transparent;
-    border: 1px solid var(--border-color);
-    font-size: 0.875rem;
-    letter-spacing: -0.05em;
-    line-height: 1.25rem;
-    outline: none;
-    padding: 0.75rem;
-    resize: none;
-    outline: none;
-    width: 100%
-  }
+ & input:read-only {
+   opacity: 0.8;
+ }
 
-  ${({ $error }) =>
+ // hasError
+ ${({ $error }) =>
     $error &&
     `
-    & input,
-    & input:focus,
-    & input:focus-visible,
-    & textarea,
-    & textarea:focus,
-    & textarea:focus-visible,
-    & select,
-    & select:focus,
-    & select:focus-visible,
-    {
-      border-color: var(--err);
-      & ::placeholder {
-        color: var(--err);
-      }
-    }
-  `}
+   & ${FormFieldGrp},
+   &:focus-within ${FormFieldGrp} {
+     border-color: var(--err)!important;
+   }
+   & input::placeholder {
+     color: var(--err);
+   }
+ `}
 `;
 
 export const LoginBtn = styled.button<{

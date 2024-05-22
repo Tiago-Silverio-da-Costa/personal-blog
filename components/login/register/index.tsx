@@ -5,12 +5,15 @@ import { useState } from "react";
 import { TAuthorRegister, authorRegisterSchema } from "@/app/api/login/utils";
 import { signIn } from "next-auth/react";
 import Alert from "@/components/commom/alert";
-import { useSearchParams } from "next/navigation";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { FormFieldError, FormFieldWrapper, FormFieldGrp, LoginBtn, Spin } from "@/styles/createBlogForms";
+import Link from "next/link";
+import { PiSpinnerBold } from "react-icons/pi";
 
 export default function AuthorRegister() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-  const errorParam = useSearchParams()?.get("error")
+
   const {
     register,
     handleSubmit,
@@ -40,13 +43,15 @@ export default function AuthorRegister() {
     // token 
 
     const token = await window.grecaptcha.enterprise.execute(
-			process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
-			{ action: "login" }
-		);
+      process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
+      { action: "login" }
+    );
 
     const loginResponse = await signIn("credentials", {
       email: data.email,
       password: data.password,
+      name: data.name,
+      profession: data.profession,
       loginToken: token,
       redirect: false,
     });
@@ -72,100 +77,133 @@ export default function AuthorRegister() {
 
 
   return (
-    <div className="flex flex-col items-center justify-center py-8">
+    <div className="w-4/5 mx-auto max-w-md mt-8 text-center min-h-[80vh] flex flex-col  justify-center">
+
+      <h1 className="text-lg font-bold">Cadastro</h1>
+      <p className="mb-5 text-xs font-light">
+        Deseja Fazer o login?{" "}
+        <Link href="/login" className="font-bold text-zinc-300 underline">
+          Clique aqui!
+        </Link>
+      </p>
+      <p className="text-center text-sm font-light mb-3 w-5/6 mx-auto">Cadastre-se como autor</p>
+
+
       {isSubmitSuccessful && (
         <div className="mb-2">
-          <Alert type="success">Login realizado! Redirecionando...</Alert>
+          <Alert type="success">Cadastrado realizado com sucesso!</Alert>
         </div>
       )}
-      {!isSubmitSuccessful &&
-        (errorParam || Object.keys(errors).length > 0) && (
-          <div className="mb-2">
-            <Alert type="error">
-              {Object.keys(errors).length > 0 && !errors.root
-                ? "Corrija os campos abaixo!"
-                : errors.root?.message == "CredentialsSignin" ||
-                  errorParam == "CredentialsSignin"
-                  ? "Usuário ou senha inválidos!"
-                  : errors.root?.message == "AccessDenied" ||
-                    errorParam == "AccessDenied"
-                    ? "Acesso não autorizado!"
-                    : "Erro ao processar login!"}
-            </Alert>
-          </div>
-        )}
-      <h1 className="text-2xl font-bold text-white">Cadastre-se como autor</h1>
-      <form className="flex flex-col gap-4 text-black" onSubmit={handleSubmit(formSubmit)}>
-
-        <input
-          type="text"
-          placeholder="Nome"
-          {...register("name")}
-          className={errors.name ? "error" : ""}
-        />
-        {errors.name && <p>{errors.name.message}</p>}
-
-        <input
-          type="email"
-          placeholder="Email"
-          {...register("email")}
-          className={errors.email ? "error" : ""}
-        />
-        {errors.email && <p>{errors.email.message}</p>}
-
-        <input
-          type="text"
-          placeholder="Profissão"
-          {...register("profession")}
-          className={errors.profession ? "error" : ""}
-        />
-        {errors.profession && <p>{errors.profession.message}</p>}
-
-        <div>
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Senha"
-            {...register("password")}
-            className={errors.password ? "error" : ""}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? "Ocultar" : "Mostrar"}
-          </button>
+      {Object.keys(errors).length > 0 && (
+        <div className="mb-2">
+          <Alert type="error">
+            {errors.root?.message ?? "Corrija o campo abaixo!"}
+          </Alert>
         </div>
-        {errors.password && <p>{errors.password.message}</p>}
+      )}
 
-        <div>
-          <input
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirme a senha"
-            {...register("confirmPassword")}
-            className={errors.confirmPassword ? "error" : ""}
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            {showConfirmPassword ? "Ocultar" : "Mostrar"}
-          </button>
+      <form onSubmit={handleSubmit(formSubmit)} noValidate>
+        <div className="text-start">
+
+          <FormFieldWrapper $error={!!errors.name}>
+            <FormFieldGrp>
+              <input
+                type="text"
+                placeholder="Nome"
+                {...register("name")}
+              />
+            </FormFieldGrp>
+            {errors.name && <FormFieldError>{errors.name.message}</FormFieldError>}
+          </FormFieldWrapper>
+
+          <FormFieldWrapper $error={!!errors.email}>
+            <FormFieldGrp>
+              <input
+                type="email"
+                placeholder="Email"
+                {...register("email")}
+                className={errors.email ? "error" : ""}
+              />
+            </FormFieldGrp>
+            {errors.email && <FormFieldError>{errors.email.message}</FormFieldError>}
+          </FormFieldWrapper>
+
+          <FormFieldWrapper $error={!!errors.profession}>
+            <FormFieldGrp>
+              <input
+                type="text"
+                placeholder="Profissão"
+                {...register("profession")}
+                className={errors.profession ? "error" : ""}
+              />
+            </FormFieldGrp>
+            {errors.profession && <FormFieldError>{errors.profession.message}</FormFieldError>}
+          </FormFieldWrapper>
+
+          <FormFieldWrapper $error={!!errors.password}>
+            <FormFieldGrp>
+              <input
+                {...register("password")}
+                inputMode="text"
+                placeholder="Senha"
+                maxLength={24}
+                readOnly={isSubmitting}
+                type={showPassword ? "text" : "password"}
+              />
+              <div
+                className="cursor-pointer text-lg opacity-70"
+                onClick={() => !isSubmitting && setShowPassword(!showPassword)}
+              >
+                {showPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
+              </div>
+            </FormFieldGrp>
+            {errors.password && <FormFieldError>{errors.password.message}</FormFieldError>}
+          </FormFieldWrapper>
+
+          <FormFieldWrapper $error={!!errors.confirmPassword}>
+            <FormFieldGrp>
+              <input
+                {...register("confirmPassword")}
+                inputMode="text"
+                placeholder="Senha"
+                maxLength={24}
+                readOnly={isSubmitting}
+                type={showPassword ? "text" : "password"}
+              />
+              <div
+                className="cursor-pointer text-lg opacity-70"
+                onClick={() => !isSubmitting && setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
+              </div>
+            </FormFieldGrp>
+            {errors.confirmPassword && <FormFieldError>{errors.confirmPassword.message}</FormFieldError>}
+          </FormFieldWrapper>
         </div>
-        {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
-
-        {errors.root && <p>{errors.root.message}</p>}
-
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Enviando..." : "Enviar"}
-        </button>
-      </form >
-      {/* providers */}
+        <div className="mt-2">
+          <LoginBtn
+            type="submit"
+            $isSubmitting={isSubmitting}
+            disabled={isSubmitting}
+          >
+            <span className="font-bold">Cadastrar</span>
+            {isSubmitting && (
+              <div className="text-xl">
+                <Spin>
+                  <PiSpinnerBold />
+                </Spin>
+              </div>
+            )}
+          </LoginBtn>
+        </div>
+      </form>
+      {/* providers
       <button
         className="text-white"
         type="submit"
         onClick={() => !isSubmitting && !isSubmitSuccessful && signIn("github")}
       >Signin with GitHub
-      </button>
+      </button> */}
 
     </div >
   )

@@ -10,6 +10,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { PiSpinnerBold } from "react-icons/pi";
 
 export default function ChangePassword({ token }: { token: string }) {
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
