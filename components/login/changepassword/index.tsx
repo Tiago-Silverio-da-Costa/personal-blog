@@ -1,3 +1,5 @@
+"use client";
+
 import { TChangePassword, changePasswordSchema } from "@/app/api/login/changepassword/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormFieldError, FormFieldWrapper, FormFieldGrp, LoginBtn, Spin } from "@/styles/createBlogForms";
