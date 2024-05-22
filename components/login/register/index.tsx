@@ -31,33 +31,25 @@ export default function AuthorRegister() {
     if (isSubmitting || isSubmitSuccessful) return;
     clearErrors();
 
-    // const responseData = await fetch("/api/register", {
-    //   credentials: "include",
-    //   cache: "no-cache",
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(data),
-    // })
-
-    // token 
-
-    const token = await window.grecaptcha.enterprise.execute(
+    const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
       process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
       { action: "login" }
     );
 
-    const loginResponse = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      name: data.name,
-      profession: data.profession,
-      loginToken: token,
-      redirect: false,
-    });
+    const responseData = await fetch("/api/register", {
+      credentials: "include",
+      cache: "no-cache",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+        gRecaptchaToken,
+      }),
+    })
 
-    if (loginResponse?.status === 200) {
+    if (responseData?.status === 200) {
       reset(
         {
           email: "",
@@ -72,7 +64,7 @@ export default function AuthorRegister() {
     }
     setError("root", {
       type: "manual",
-      message: loginResponse?.error ?? "Erro ao processar login!",
+      message: "Erro ao processar cadastro!",
     })
   }
 
