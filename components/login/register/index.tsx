@@ -32,7 +32,7 @@ export default function AuthorRegister() {
     clearErrors();
 
     const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
-      process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
+      process.env.RECAPTCHA_KEY as string,
       { action: "login" }
     );
 
@@ -190,13 +190,13 @@ export default function AuthorRegister() {
           </LoginBtn>
         </div>
       </form>
-      {/* providers
+      {/* providers */}
       <button
         className="text-white"
         type="submit"
-        onClick={() => !isSubmitting && !isSubmitSuccessful && signIn("github")}
+        onClick={() => signIn("github")}
       >Signin with GitHub
-      </button> */}
+      </button>
 
     </div >
   )

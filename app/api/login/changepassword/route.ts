@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       {
         event: {
           token: gRecaptchaToken,
-          siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_KEY,
+          siteKey: process.env.RECAPTCHA_KEY,
           expectedAction: "changepassword",
         },
       }

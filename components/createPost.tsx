@@ -104,7 +104,7 @@ export function CreatePost() {
     clearErrors()
 
     const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
-			process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
+			process.env.RECAPTCHA_KEY as string,
 			{ action: "createpost" }
 		);
 

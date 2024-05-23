@@ -125,7 +125,7 @@ export default function EditPost({ id }: { id: string }) {
     clearErrors()
 
     const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
-      process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
+      process.env.RECAPTCHA_KEY as string,
       { action: "editpost" }
     );
 

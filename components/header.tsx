@@ -32,6 +32,7 @@ const satoshi = localFont({
 })
 
 export default function Header({ id }: { id?: string }) {
+ 
 
   return (
     <section className="border-b-third border-b">
@@ -43,7 +44,7 @@ export default function Header({ id }: { id?: string }) {
           )}
           {id && (
             <>
-              <DeletePost id={id} />
+              <DeletePost id={id}  />
               <EditPost id={id} />
             </>
           )}

@@ -26,24 +26,25 @@ export async function PUT(req: NextRequest) {
       }
     );
 
-  const session = await getServerSession(authOptions);
-  if (!session)
-    return new NextResponse(
-      JSON.stringify({
-        status: "error",
-        message: "Não Autorizado!",
-      } as ApiReturnError),
-      {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin":
-            process.env.VERCEL_ENV === "production"
-              ? "https://personal-blog-cmsn.vercel.app/"
-              : "*",
-        },
-      }
-    );
+  // const session = await getServerSession(authOptions);
+
+  // if (!session)
+  //   return new NextResponse(
+  //     JSON.stringify({
+  //       status: "error",
+  //       message: "Não Autorizado!",
+  //     } as ApiReturnError),
+  //     {
+  //       status: 401,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Access-Control-Allow-Origin":
+  //           process.env.VERCEL_ENV === "production"
+  //             ? "https://personal-blog-cmsn.vercel.app/"
+  //             : "*",
+  //       },
+  //     }
+  //   );
 
   const accessIp = req.headers.get("cf-connecting-ip");
 
@@ -87,7 +88,7 @@ export async function PUT(req: NextRequest) {
       {
         event: {
           token: gRecaptchaToken,
-          siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_KEY,
+          siteKey: process.env.RECAPTCHA_KEY,
           expectedAction: "editpost",
         },
       }

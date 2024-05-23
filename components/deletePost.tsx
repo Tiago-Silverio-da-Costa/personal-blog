@@ -1,4 +1,4 @@
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa";
 import localFont from "next/font/local";
 
@@ -29,12 +29,13 @@ const satoshi = localFont({
 
 export function DeletePost({ id }: { id: string }) {
 
+
   const router = useRouter();
 
   const deletePost = async () => {
 
     const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
-      process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
+      process.env.RECAPTCHA_KEY as string,
       { action: "deletePost" }
     );
 

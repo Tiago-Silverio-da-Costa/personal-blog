@@ -73,7 +73,8 @@ export const FormFieldGrp = styled.div<{
   display: flex;
   padding: 0.75rem;
   transition: all 0.2s;
-
+  border: 0.5px solid var(--secondary);
+  
   ${({ $password }) =>
     $password &&
     `
@@ -90,7 +91,7 @@ export const FormFieldWrapper = styled.div<{
 }>`
 width: 100%;
 margin: 1rem 0;
-border: 0.5px solid var(--secondary);
+
 
 & input,
 & input:focus,

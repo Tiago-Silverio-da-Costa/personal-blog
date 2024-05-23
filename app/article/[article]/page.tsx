@@ -3,9 +3,9 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 
 export default async function Page({
-	params: { article },
+  params: { article },
 }: {
-	params: { article: string };
+  params: { article: string };
 }) {
   const id = article
 
