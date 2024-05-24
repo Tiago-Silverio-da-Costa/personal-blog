@@ -4,6 +4,8 @@ import { prisma } from "@/adapter/db";
 import { toTitle } from "@/components/commom/utils";
 import { GRecaptchaResponseProps } from "../utils";
 import axios from "axios";
+import { authOptions } from "@/adapter/nextAuth";
+import { getServerSession } from "next-auth";
 
 export async function POST(req: NextRequest) {
   if (req.headers.get("content-type") !== "application/json")
@@ -25,24 +27,25 @@ export async function POST(req: NextRequest) {
       }
     );
 
-  // const session = await getServerSession(authOptions);
-  // if (!session)
-  //   return new NextResponse(
-  //     JSON.stringify({
-  //       status: "error",
-  //       message: "Não Autorizado!",
-  //     } as ApiReturnError),
-  //     {
-  //       status: 401,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Access-Control-Allow-Origin":
-  //           process.env.VERCEL_ENV === "production"
-  //             ? "https://personal-blog-cmsn.vercel.app/"
-  //             : "*",
-  //       },
-  //     }
-  //   );
+  const session = await getServerSession(authOptions);
+
+  if (!session)
+    return new NextResponse(
+      JSON.stringify({
+        status: "error",
+        message: "Não Autorizado!",
+      } as ApiReturnError),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":
+            process.env.VERCEL_ENV === "production"
+              ? "https://personal-blog-cmsn.vercel.app/"
+              : "*",
+        },
+      }
+    );
 
   const accessIp = req.headers.get("cf-connecting-ip");
 
