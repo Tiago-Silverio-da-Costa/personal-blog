@@ -89,6 +89,7 @@ export async function POST(req: NextRequest) {
     );
 
   try {
+
     const { data } = await axios.post(
       `https://recaptchaenterprise.googleapis.com/v1/projects/${process.env.RECAPTCHA_PROJECT_ID}/assessments?key=${process.env.RECAPTCHA_API_KEY}`,
       {
@@ -104,11 +105,11 @@ export async function POST(req: NextRequest) {
 
     await prisma.adminAuditRecaptcha.create({
       data: {
-        // User: {
-        //   connect: {
-        //     uuid: session.user.id
-        //   }
-        // },
+        User: {
+          connect: {
+            id: session.user.id,
+          },
+        },
         action: "createpost",
         valid: gRecaptchaData.tokenProperties.valid,
         invalidReason: gRecaptchaData.tokenProperties.invalidReason,

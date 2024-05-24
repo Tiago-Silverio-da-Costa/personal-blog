@@ -40,11 +40,10 @@ export default async function Header({ id }: { id?: string }) {
       <div className="flex justify-between items-center mx-auto w-5/6 max-w-5xl py-4">
         <Link href="/" className={`text-2xl font-bold ${satoshi.className}`}>Blog</Link>
         <div className="flex items-center gap-4">
-          {/* create post deve aparecer somente na home*/}
           {!id && session && (
             <CreatePost />
           )}
-          {id && session && ( // aparecer só dentro do post
+          {id && session && (
             <>
               <DeletePost id={id} />
               <EditPost id={id} />

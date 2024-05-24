@@ -98,11 +98,11 @@ export async function PUT(req: NextRequest) {
 
     await prisma.adminAuditRecaptcha.create({
       data: {
-        // User: {
-        //   connect: {
-        //     uuid: session.user.id
-        //   }
-        // },
+        User: {
+          connect: {
+            id: session.user.id
+          }
+        },
         action: "editpost",
         valid: gRecaptchaData.tokenProperties.valid,
         invalidReason: gRecaptchaData.tokenProperties.invalidReason,

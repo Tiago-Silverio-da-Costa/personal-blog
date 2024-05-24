@@ -68,8 +68,7 @@ model AdminAuditRecaptcha {
 }
 
 model User {
-  id   String @id @default(uuid())
-  uuid String @unique @default(dbgenerated("gen_random_uuid()"))
+  id String @id @default(uuid())
 
   name           String
   email          String                @unique

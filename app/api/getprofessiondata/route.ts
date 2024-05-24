@@ -6,7 +6,7 @@ import { getProfessionData } from "./utils";
 export async function GET() {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session) 
     return new NextResponse(
       JSON.stringify({
         status: "error",
@@ -23,7 +23,7 @@ export async function GET() {
         },
       }
     );
-  }
+  
 
   const professions = await getProfessionData()
 

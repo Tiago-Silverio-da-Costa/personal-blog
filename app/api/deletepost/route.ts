@@ -91,11 +91,11 @@ export async function DELETE(req: NextRequest) {
 
     await prisma.adminAuditRecaptcha.create({
       data: {
-        // User: {
-        //   connect: {
-        //     uuid: session.user.id
-        //   }
-        // },
+        User: {
+          connect: {
+            id: session.user.id
+          }
+        },
         action: "deletepost",
         valid: gRecaptchaData.tokenProperties.valid,
         invalidReason: gRecaptchaData.tokenProperties.invalidReason,

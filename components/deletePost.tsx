@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa";
 import localFont from "next/font/local";

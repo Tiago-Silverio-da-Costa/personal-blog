@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import StyledComponentsRegistry from "@/lib/styledRegistry";
 import AuthSessionProvider from "@/lib/authSessionRegistry";
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,6 +54,9 @@ export default async function RootLayout({
 
 	return (
 		<html lang="en">
+			<Script
+				src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_KEY}`}
+			/>
 			<body className={inter.className}>
 				<StyledComponentsRegistry>
 					<AuthSessionProvider>
