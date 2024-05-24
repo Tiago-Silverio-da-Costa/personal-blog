@@ -1,11 +1,14 @@
-import { prisma } from "@/adapter/db";
 import { NextAuthOptions } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client"
+import type { Adapter } from 'next-auth/adapters';
+
+const prisma = new PrismaClient()
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as Adapter,
   // debug: process.env.VERCEL_ENV !== "production" && false,
   providers: [
     GitHub({
@@ -24,4 +27,4 @@ export const authOptions: NextAuthOptions = {
       from: process.env.EMAIL_FROM,
     }),
   ],
-};
+}

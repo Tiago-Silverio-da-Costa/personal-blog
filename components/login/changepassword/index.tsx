@@ -35,7 +35,7 @@ export default function ChangePassword({ token }: { token: string }) {
     clearErrors();
 
     const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
-      process.env.RECAPTCHA_KEY as string,
+      process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
       { action: "changepassword" }
     );
 

@@ -88,7 +88,7 @@ export async function PUT(req: NextRequest) {
       {
         event: {
           token: gRecaptchaToken,
-          siteKey: process.env.RECAPTCHA_KEY,
+          siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_KEY,
           expectedAction: "editpost",
         },
       }
