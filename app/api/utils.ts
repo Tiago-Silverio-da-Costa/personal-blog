@@ -5,24 +5,6 @@ import {
 } from "@/components/admin/utils";
 import { Prisma } from "@prisma/client";
 
-export interface GRecaptchaResponseProps {
-  name: string;
-  event: {
-    token: string;
-    siteKey: string;
-    expectedAction: string;
-  };
-  riskAnalysis: {
-    score: number;
-    reasons: string[];
-    extendedVerdictReasons: string[];
-  };
-  tokenProperties: {
-    valid: boolean;
-    invalidReason: string;
-    action: string;
-  };
-}
 
 export type TArticleData = Prisma.PromiseReturnType<typeof getArticleData>[0];
 type TQuery = ReturnType<typeof getQuery>;

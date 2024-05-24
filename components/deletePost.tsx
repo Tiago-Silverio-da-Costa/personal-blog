@@ -36,10 +36,7 @@ export function DeletePost({ id }: { id: string }) {
 
   const deletePost = async () => {
 
-    const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
-      process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
-      { action: "deletePost" }
-    );
+
 
     const response = await fetch("/api/deletepost", {
       credentials: "include",
@@ -50,7 +47,6 @@ export function DeletePost({ id }: { id: string }) {
       },
       body: JSON.stringify({
         id,
-        gRecaptchaToken
       })
     })
     if (response.ok) {

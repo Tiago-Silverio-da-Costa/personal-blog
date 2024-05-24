@@ -122,11 +122,6 @@ export function CreatePost() {
   const onSubmit = async (data: TCreateBlog) => {
     clearErrors()
 
-    const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
-      process.env.NEXT_PUBLIC_RECAPTCHA_KEY as string,
-      { action: "createpost" }
-    );
-
     const responseData = await fetch("/api/createpost", {
       credentials: "include",
       cache: "no-cache",
@@ -136,7 +131,6 @@ export function CreatePost() {
       },
       body: JSON.stringify({
         ...data,
-        gRecaptchaToken
       })
     })
 
@@ -160,11 +154,6 @@ export function CreatePost() {
       const response: {
         fields?: (keyof TCreateBlog)[];
       } & ApiReturnError = await responseData.json();
-
-
-
-
-      console.log("gRecaptchaToken", gRecaptchaToken)
 
       if (response.status == "error") {
         if (response.message) {
@@ -321,6 +310,21 @@ export function CreatePost() {
                   {!createThemeBtn ? <FaPlus /> : <IoCaretBackOutline />}
                 </div>
               </div>
+
+              {/* <FormFieldWrapper $error={!!errors.createAuthor}>
+                <FormFieldGrp>
+                  <input
+                    {...register("createAuthor")}
+                    inputMode="text"
+                    placeholder="Criar Autor"
+                    maxLength={100}
+                    readOnly={isSubmitting}
+                  />
+                </FormFieldGrp>
+                {errors.createAuthor && (
+                  <FormFieldError>{errors.createAuthor.message}</FormFieldError>
+                )}
+              </FormFieldWrapper> */}
 
               <FormFieldWrapper $error={!!errors.existedAuthor}>
                 <FormFieldGrp>

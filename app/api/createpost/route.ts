@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { TCreateBlog } from "./utils";
 import { prisma } from "@/adapter/db";
 import { toTitle } from "@/components/commom/utils";
-import { GRecaptchaResponseProps } from "../utils";
-import axios from "axios";
 import { authOptions } from "@/adapter/nextAuth";
 import { getServerSession } from "next-auth";
 
@@ -47,123 +45,25 @@ export async function POST(req: NextRequest) {
       }
     );
 
-  const accessIp = req.headers.get("cf-connecting-ip");
-
   let {
     title,
     subtitle,
     createTheme,
     existedTheme,
     existedAuthor,
+    createAuthor,
     content,
     profession,
-    gRecaptchaToken,
   }: TCreateBlog = await req.json();
 
   title = toTitle(title?.trim() ?? "").substring(0, 100);
   subtitle = toTitle(subtitle?.trim() ?? "").substring(0, 100);
   content = (content?.trim() ?? "").substring(0, 10000);
   existedAuthor = toTitle(existedAuthor?.trim() ?? "").substring(0, 25);
+  createAuthor = toTitle(createAuthor?.trim() ?? "").substring(0, 25);
   existedTheme = toTitle(existedTheme?.trim() ?? "").substring(0, 25);
   createTheme = toTitle(createTheme?.trim() ?? "").substring(0, 25);
   profession = toTitle(profession?.trim() ?? "").substring(0, 25);
-
-  // check token
-  if (!gRecaptchaToken)
-    return new NextResponse(
-      JSON.stringify({
-        status: "error",
-        message: "Captcha não encontrado!",
-        error: "CreatePost-002",
-      } as ApiReturnError),
-      {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Acces-Control-Allow-Origin":
-            process.env.VERCEL_ENV === "production"
-              ? "https://personal-blog-cmsn.vercel.app/"
-              : "*",
-        },
-      }
-    );
-
-  try {
-
-    const { data } = await axios.post(
-      `https://recaptchaenterprise.googleapis.com/v1/projects/${process.env.RECAPTCHA_PROJECT_ID}/assessments?key=${process.env.RECAPTCHA_API_KEY}`,
-      {
-        event: {
-          token: gRecaptchaToken,
-          siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_KEY,
-          expectedAction: "createpost",
-        },
-      }
-    );
-    const gRecaptchaData = data as GRecaptchaResponseProps;
-    const { score, ...riskAnalysis } = gRecaptchaData.riskAnalysis;
-
-    await prisma.adminAuditRecaptcha.create({
-      data: {
-        User: {
-          connect: {
-            id: session.user.id,
-          },
-        },
-        action: "createpost",
-        valid: gRecaptchaData.tokenProperties.valid,
-        invalidReason: gRecaptchaData.tokenProperties.invalidReason,
-        expectedAction: gRecaptchaData.event.expectedAction,
-        score,
-        riskAnalysis,
-        ip: accessIp,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    if (
-      !gRecaptchaData.tokenProperties.valid ||
-      gRecaptchaData.event.expectedAction !== "createpost" ||
-      score < 0.5
-    )
-      return new NextResponse(
-        JSON.stringify({
-          status: "error",
-          message: "Ação não autorizada!",
-          error: "CreatePost-003",
-        } as ApiReturnError),
-        {
-          status: 403,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin":
-              process.env.VERCEL_ENV === "production"
-                ? "https://personal-blog-cmsn.vercel.app/"
-                : "*",
-          },
-        }
-      );
-  } catch (err) {
-    return new NextResponse(
-      JSON.stringify({
-        status: "error",
-        message: "Captcha inválido!",
-        error: "DeletePost-004",
-      } as ApiReturnError),
-      {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin":
-            process.env.VERCEL_ENV === "production"
-              ? "https://personal-blog-cmsn.vercel.app/"
-              : "*",
-        },
-      }
-    );
-  }
 
   // validate post info
   if (!title || !subtitle || !content || !existedAuthor || !profession) {
@@ -266,29 +166,15 @@ export async function POST(req: NextRequest) {
 
     const authorData = await prisma.user.findFirst({
       where: {
-        name: existedAuthor,
-        image: "https://avatars.githubusercontent.com/u/72054311?v=4",
+        Posts: {
+          every: {
+            author: {
+              name: existedAuthor,
+            },
+          },
+        },
       },
     });
-    if (!authorData) {
-      return new NextResponse(
-        JSON.stringify({
-          status: "error",
-          message: "Autor não encontrado!",
-          error: "CreatePost-007",
-        } as ApiReturnError),
-        {
-          status: 404,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin":
-              process.env.VERCEL_ENV === "production"
-                ? "https://personal-blog-cmsn.vercel.app/"
-                : "*",
-          },
-        }
-      );
-    }
 
     const postData = await prisma.post.create({
       data: {
@@ -296,13 +182,25 @@ export async function POST(req: NextRequest) {
         subtitle,
         content,
         themeId: themeData?.id,
-        authorId: authorData.id,
+        authorId: authorData?.id,
         professionId: professionData.id,
       },
       select: {
         id: true,
       },
     });
+
+    if (createAuthor !== "")
+      await prisma.user.create({
+        data: {
+          name: createAuthor.charAt(0).toUpperCase() + createAuthor.slice(1),
+          Posts: {
+            connect: {
+              id: postData.id,
+            },
+          },
+        },
+      });
 
     if (createTheme !== "")
       await prisma.theme.create({
