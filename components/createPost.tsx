@@ -13,6 +13,7 @@ import { PiSpinnerBold } from "react-icons/pi";
 import { TUsersData } from "@/app/api/getusersdata/utils";
 import { TThemeData } from "@/app/api/getthemedata/utils";
 import localFont from "next/font/local";
+import { TProfessionData } from "@/app/api/getprofessiondata/utils";
 
 const satoshi = localFont({
   src: [
@@ -48,6 +49,7 @@ export function CreatePost() {
   const [createThemeBtn, SetcreateThemeBtn] = useState<boolean>(false)
   const [users, setUsers] = useState<TUsersData>();
   const [theme, setTheme] = useState<TThemeData>();
+  const [professions, setProfessions] = useState<TProfessionData>();
 
   const {
     handleSubmit,
@@ -65,8 +67,6 @@ export function CreatePost() {
       profession: "selecione"
     }
   })
-
-  
 
   const getUsers = async () => {
     const response = await fetch("/api/getusersdata", {
@@ -95,18 +95,36 @@ export function CreatePost() {
     const theme = await response.json()
     setTheme(theme.data)
   }
+
+  const getProfession = async () => {
+    const response = await fetch("/api/getprofessiondata", {
+      credentials: "include",
+      cache: "no-cache",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+
+
+    const professions = await response.json()
+    setProfessions(professions.data)
+  }
+
   useEffect(() => {
     getTheme()
     getUsers()
+    getProfession()
+
   }, [])
 
   const onSubmit = async (data: TCreateBlog) => {
     clearErrors()
 
     const gRecaptchaToken = await window.grecaptcha.enterprise.execute(
-			process.env.RECAPTCHA_KEY as string,
-			{ action: "createpost" }
-		);
+      process.env.RECAPTCHA_KEY as string,
+      { action: "createpost" }
+    );
 
     const responseData = await fetch("/api/createpost", {
       credentials: "include",
@@ -141,6 +159,11 @@ export function CreatePost() {
       const response: {
         fields?: (keyof TCreateBlog)[];
       } & ApiReturnError = await responseData.json();
+
+
+
+
+      console.log("gRecaptchaToken", gRecaptchaToken)
 
       if (response.status == "error") {
         if (response.message) {
@@ -326,8 +349,8 @@ export function CreatePost() {
                     <option disabled value="selecione">
                       Profissão
                     </option>
-                    {users?.map((users) => (
-                      <option key={users.id} value={users.profession?.name}>{users.profession?.name}</option>
+                    {professions?.map((profession) => (
+                      <option key={profession.id} value={profession.name}>{profession.name}</option>
                     ))}
                   </select>
                 </FormFieldGrp>

@@ -4,8 +4,6 @@ import { prisma } from "@/adapter/db";
 import { toTitle } from "@/components/commom/utils";
 import { GRecaptchaResponseProps } from "../utils";
 import axios from "axios";
-import { authOptions } from "../auth/[...nextauth]/authOptions";
-import { getServerSession } from "next-auth/next";
 
 export async function POST(req: NextRequest) {
   if (req.headers.get("content-type") !== "application/json")
@@ -265,7 +263,7 @@ export async function POST(req: NextRequest) {
     const authorData = await prisma.user.findFirst({
       where: {
         name: existedAuthor,
-        profileImage: "https://avatars.githubusercontent.com/u/72054311?v=4",
+        image: "https://avatars.githubusercontent.com/u/72054311?v=4",
       },
     });
     if (!authorData) {

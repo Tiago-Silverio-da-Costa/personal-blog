@@ -1,4 +1,4 @@
-import { prisma } from "../../../adapter/db";
+import { prisma } from "@/adapter/db";
 import { Prisma } from "@prisma/client";
 
 export type TThemeData = Prisma.PromiseReturnType<typeof getThemedata>;

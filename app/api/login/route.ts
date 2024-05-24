@@ -112,10 +112,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const hashedPassword = await bcrypt.hash(
-    password,
-    process.env.BCRYPT_SALT ?? 10
-  );
+  // const hashedPassword = await bcrypt.hash(
+  //   password,
+  //   process.env.BCRYPT_SALT ?? 10
+  // );
 
   await prisma.user.create({
     data: {
@@ -126,8 +126,8 @@ export async function POST(req: NextRequest) {
           name: profession,
         },
       },
-      password: hashedPassword,
-      profileImage: "https://avatars.githubusercontent.com/u/72054311?v=4",
+      // password: hashedPassword,
+      image: "https://avatars.githubusercontent.com/u/72054311?v=4",
     },
     select: {
       id: true,

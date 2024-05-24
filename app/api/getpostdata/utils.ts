@@ -19,7 +19,7 @@ export async function getPostData() {
         select: {
           name: true,
           id: true,
-          profileImage: true,
+          image: true,
         },
       },
       profession: {

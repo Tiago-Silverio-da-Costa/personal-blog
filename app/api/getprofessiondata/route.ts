@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { getThemedata } from "./utils";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/adapter/nextAuth";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
+import { getProfessionData } from "./utils";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  
-  if (!session)
+
+  if (!session) {
     return new NextResponse(
       JSON.stringify({
         status: "error",
@@ -23,13 +23,14 @@ export async function GET() {
         },
       }
     );
-    
-  const themes = await getThemedata();
-  
+  }
+
+  const professions = await getProfessionData()
+
   return new NextResponse(
     JSON.stringify({
       status: "success",
-      data: themes
+      data: professions,
     }),
     {
       status: 200,
@@ -39,7 +40,7 @@ export async function GET() {
           process.env.VERCEL_ENV === "production"
             ? "https://personal-blog-cmsn.vercel.app/"
             : "*",
-      }
+      },
     }
-  )
+  );
 }

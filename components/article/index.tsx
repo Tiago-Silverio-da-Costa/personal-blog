@@ -109,7 +109,7 @@ async function ArticleHead({ id }: { id: string }) {
       </div>
 
       <div className="flex items-center gap-4 mt-8">
-        <Image className="rounded-full border-2 border-secondary scale-90" src={postData.author.profileImage as string} alt="Autor" width={50} height={50} />
+        <Image className="rounded-full border-2 border-secondary scale-90" src={postData.author.image as string} alt="Autor" width={50} height={50} />
         <div className="flex flex-col gap-2">
           <p className={`${satoshi.className} text-sm text-secondary font-normal tracking-tighter leading-4`}>{postData.author.name}</p>
           <p className="text-xs text-secondary font-light tracking-tighter uppercase leading-3">{postData.profession.name}</p>

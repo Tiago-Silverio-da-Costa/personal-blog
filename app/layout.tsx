@@ -1,7 +1,6 @@
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import StyledComponentsRegistry from "@/lib/styledRegistry";
-import { getServerSession } from "next-auth";
 import AuthSessionProvider from "@/lib/authSessionRegistry";
 import type { Metadata, Viewport } from "next";
 
