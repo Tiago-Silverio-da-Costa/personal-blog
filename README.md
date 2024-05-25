@@ -21,4 +21,6 @@ Este projeto começou como uma ideia simples: criar um blog para compartilhar mi
 
 ## Como Contribuir
 
-Se você tiver sugestões de melhorias, correções de bugs ou novas ideias, fique à vontade para contribuir! Basta fazer um fork deste repositório, fazer as alterações e enviar um pull request. Toda contribuição é bem-vinda!
+Se você tiver sugestões de melhorias, correções de bugs ou novas ideias, fique à vontade para contribuir! Você pode fazer um fork deste repositório, fazer as alterações e enviar um pull request. Além disso, você também pode adicionar suas sugestões ou relatar problemas diretamente no Notion. Toda contribuição é bem-vinda!
+
+## [Notion do projeto](https://www.notion.so/Blog-s-todo-f123101012184d10af65e8b8267264e6)
