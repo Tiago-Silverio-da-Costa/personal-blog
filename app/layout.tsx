@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
 	title:
 		"TiagoSC – Blog | artigos sobre tecnologia, programação e desenvolvimento web.",
-	metadataBase: new URL("https://tiagosc-blog.com.br"),
+	metadataBase: new URL("https://personal-blog-cmsn.vercel.app"),
 	description:
 		"Blog pessoal com artigos sobre tecnologia, programação e desenvolvimento web.",
 	openGraph: {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 		siteName: "TiagoSC – Blog ",
 		images: [
 			{
-				url: "https://tiagosc-blog.com.br/tiagosc-blog.png",
+				url: "https://personal-blog-cmsn.vercel.app/tiagosc-blog.png",
 				width: 1280,
 				height: 720,
 			},
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 			"TiagoSC – Blog | artigos sobre tecnologia, programação e desenvolvimento web.",
 		description:
 			"Blog pessoal com artigos sobre tecnologia, programação e desenvolvimento web.",
-		images: ["https://tiagosc-blog.com.br/tiagosc-blog.png"],
+		images: ["https://personal-blog-cmsn.vercel.app/tiagosc-blog.png"],
 	},
 };
 
