@@ -4,6 +4,7 @@ import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client"
 import type { Adapter } from 'next-auth/adapters';
+import { randomBytes, randomUUID } from "crypto";
 
 const prisma = new PrismaClient()
 
@@ -31,5 +32,8 @@ export const authOptions: NextAuthOptions = {
     strategy: "database",
     maxAge: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 24 hours
+    generateSessionToken: () => {
+      return randomUUID?.() ?? randomBytes(32).toString("hex")
+    }
   },
 }
