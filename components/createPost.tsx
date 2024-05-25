@@ -115,8 +115,6 @@ export function CreatePost() {
     getTheme()
     getUsers()
     getProfession()
-
-
   }, [])
 
   const onSubmit = async (data: TCreateBlog) => {
@@ -311,24 +309,10 @@ export function CreatePost() {
                 </div>
               </div>
 
-              {/* <FormFieldWrapper $error={!!errors.createAuthor}>
-                <FormFieldGrp>
-                  <input
-                    {...register("createAuthor")}
-                    inputMode="text"
-                    placeholder="Criar Autor"
-                    maxLength={100}
-                    readOnly={isSubmitting}
-                  />
-                </FormFieldGrp>
-                {errors.createAuthor && (
-                  <FormFieldError>{errors.createAuthor.message}</FormFieldError>
-                )}
-              </FormFieldWrapper> */}
-
               <FormFieldWrapper $error={!!errors.existedAuthor}>
                 <FormFieldGrp>
                   <select
+                  className="appearance-none"
                     disabled={isSubmitting}
                     {...register("existedAuthor")}
                   >

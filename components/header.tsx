@@ -38,7 +38,7 @@ export default async function Header({ id }: { id?: string }) {
   return (
     <section className="border-b-third border-b">
       <div className="flex justify-between items-center mx-auto w-5/6 max-w-5xl py-4">
-        <Link href="/" className={`text-2xl font-bold ${satoshi.className}`}>Blog</Link>
+        <Link href="/" className={`text-2xl font-bold transition-all duration-200 hover:opacity-75 ${satoshi.className}`}>Blog</Link>
         <div className="flex items-center gap-4">
           {!id && session && (
             <CreatePost />
