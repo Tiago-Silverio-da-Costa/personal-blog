@@ -30,7 +30,7 @@ export default function Footer() {
     <section className="border-t-third border-t">
       <div className="flex justify-between items-center mx-auto w-5/6 max-w-5xl py-8">
         <h1 className={`text-sm font-bold ${satoshi.className}`}>Blog</h1>
-        <h1 className={`text-sm font-bold ${satoshi.className}`}>© {new Date().getFullYear()} | Desenvolvido por <a href="https://github.com/Tiago-Silverio-da-Costa" target="_blank" className="text-blue-500">Tiago S. C.</a></h1>
+        <h1 className={`text-sm font-bold ${satoshi.className}`}>© {new Date().getFullYear()} | Desenvolvido por <a  aria-label="Tiago S. C." href="https://github.com/Tiago-Silverio-da-Costa" target="_blank" className="text-blue-500">Tiago S. C.</a></h1>
       </div>
     </section>
   )
