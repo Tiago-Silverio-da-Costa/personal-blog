@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 	metadataBase: new URL("https://personal-blog-cmsn.vercel.app"),
 	description:
 		"Blog pessoal com artigos sobre tecnologia, programação e desenvolvimento web.",
+		keywords: ["Tecnologia", "Programação", "Desenvolvimento Web", "Blog de Tecnologia", "Artigos de Programação", "Next.js", "JavaScript", "React", "Node.js"],
 	openGraph: {
 		title:
 			"TiagoSC – Blog | artigos sobre tecnologia, programação e desenvolvimento web.",
