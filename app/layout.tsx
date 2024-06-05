@@ -55,9 +55,6 @@ export default async function RootLayout({
 
 	return (
 		<html lang="en">
-			<Script
-				src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_KEY}`}
-			/>
 			<body className={inter.className}>
 				<StyledComponentsRegistry>
 					<AuthSessionProvider>
